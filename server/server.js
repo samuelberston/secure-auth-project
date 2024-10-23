@@ -25,3 +25,30 @@ app.use(session({
         sameSite: "Strict" // prevents CSRF attacks
     }
 }));
+
+// CSRF middleware to store token in secure cookie
+app.use((req, res, next) => {
+    if (!req.session.csrfToken) {
+        req.session.csrfToken = uuidv4(); // generate a new CSRF token
+    }
+    res.cookie("XSRF-TOKEN", req.session.csrfToken,
+        {
+            httpOnly: true,
+            secure: true,
+            sameSite: "Strict" // prevents CSRF attacks  
+        }
+    );
+});
+
+// middleware to validate CSRF token
+const crsfValidation = (req, res, next) => {
+    const csrfTokenFromClient = req.headers['x-xsrf-token'] || req.body._csrf;
+    if (!csrfTokenFromClient || csrfTokenFromClient !== req.session.csrfToken) {
+        return res.status(403).send({ message: "Invalid CSRF token" });
+    }
+    next();
+}
+
+// Authenticate user function
+
+// Login endpoint with input validation and JWT session initiation
