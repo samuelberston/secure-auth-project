@@ -5,6 +5,7 @@ CREATE DATABASE auth_db;
 CREATE SCHEMA auth_db;
 
 CREATE TABLE users (
+    user_uuid UUID PRIMARY KEY,
     username VARCHAR(100) UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     salt TEXT NOT_NULL.,
