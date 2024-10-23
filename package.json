@@ -1,0 +1,11 @@
+{
+  "name": "secure-auth-project",
+  "version": "1.0.0",
+  "description": "A project to implement secure web authentication using login credentials, session cookies, validation, jwt, and other security mechanisms\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
