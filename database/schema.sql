@@ -6,7 +6,7 @@ CREATE SCHEMA auth_db;
 
 CREATE TABLE users (
     user_uuid UUID PRIMARY KEY,
-    username VARCHAR(100) UNIQUE NOT NULL,
+    username VARCHAR(30) UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     salt TEXT NOT_NULL.,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
