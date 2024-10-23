@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require('uuid'); // For generating CSRF tokens
 const { body, validationResult, cookie } = require('express-validator');
 const cookieParser = require('cookie-parser');
 
-const pool = require('./db');  // PostgreSQL connection
+const { usernameValidator, passwordValidator } = require('./validators.js');
 
 const app = express();
 
@@ -51,22 +51,4 @@ const crsfValidation = (req, res, next) => {
     next();
 }
 
-// Authenticate user function
-const authenticateUser = async (username, password) => {
-    try {
-        // check user exists
-        const userQuery = `SELECT EXISTS(SELECT 1 FROM users WHERE username = $1);`;
-        const res = await pool.query(userQuery, [username]);
-        if (!res.rows[0].exists) { // user exists
-            console.log("User does not exist");
-            return false;
-        }
-        // TO DO - Authentication, checking password
 
-
-    } catch (err) {
-        console.error("Error during authentication", err);
-    }
-};
-
-// Login endpoint with input validation and JWT session initiation
