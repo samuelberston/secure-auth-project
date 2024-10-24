@@ -5,7 +5,7 @@
 const { uuidv4 } = require('uuid');
 const { validationResult } = require('express-validator');
 
-const pool = require('./db');  // PostgreSQL connection
+const pool = require('../psql.js');  // PostgreSQL connection
 
 const UsersRouter = require('express').Router();
 

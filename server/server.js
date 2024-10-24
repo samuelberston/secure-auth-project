@@ -5,8 +5,8 @@ const session = require('express-session');
 const { v4: uuidv4 } = require('uuid'); // For generating CSRF tokens
 const cookieParser = require('cookie-parser');
 
-const { UsersRouter } = require("./routes/usersRouter.js");
-const { LoginRouter } = require("./routes/loginRouter.js");
+const UsersRouter = require("./routes/usersRouter.js");
+const LoginRouter = require("./routes/loginRouter.js");
 
 const app = express();
 
@@ -23,7 +23,7 @@ app.use(session({
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "Strict" // prevents CSRF attacks
     }
 }));

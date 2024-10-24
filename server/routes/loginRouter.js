@@ -12,7 +12,7 @@ const { usernameValidator, passwordValidator } = require('../validators.js');
 const LoginRouter = require("express").Router();
 
 // PostgreSQL connect
-const pool = require('./db');
+const pool = require('../psql.js');
 
 /**
  * @route POST /login
@@ -97,7 +97,6 @@ LoginRouter.post(
                         secure: true, // Only send cookie over HTTPS
                         sameSite: 'Strict' // Prevent CSRF
                     });
-
 
                     console.log("Authentication successful");
                     res.status(200).json({ message: "Authentication successful" });
