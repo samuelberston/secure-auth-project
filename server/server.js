@@ -31,30 +31,35 @@ app.use(session({
 
 // CSRF middleware to store token in secure cookie
 app.use((req, res, next) => {
-    if (!req.session.csrfToken) {
-        req.session.csrfToken = uuidv4(); // generate a new CSRF token
-    }
-    res.cookie("XSRF-TOKEN", req.session.csrfToken,
-        {
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "Strict" // site cannot be accessed from other sites  
+    try {
+        if (!req.session.csrfToken) {
+            req.session.csrfToken = uuidv4(); // generate a new CSRF token
         }
-    );
-    next();
+        res.cookie("XSRF-TOKEN", req.session.csrfToken,
+            {
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "Strict" // site cannot be accessed from other sites  
+            }
+        );
+    } catch (err) {
+        next(err);
+    }
 });
 
 // middleware to validate CSRF token
 const csrfValidation = (req, res, next) => {
-    const csrfTokenFromClient = req.headers['x-xsrf-token'] || req.body._csrf;
-    if (!csrfTokenFromClient || csrfTokenFromClient !== req.session.csrfToken) {
-        return res.status(403).send({ message: "Invalid CSRF token" });
+    try {
+        const csrfTokenFromClient = req.headers['x-xsrf-token'] || req.body._csrf;
+        if (!csrfTokenFromClient || csrfTokenFromClient !== req.session.csrfToken) {
+            return res.status(403).send({ message: "Invalid CSRF token" });
+        }
+    } catch (err) {
+        next(err);
     }
-    next();
 };
 
 // dummy home page
 app.get('/home', (req, res) => {
-    console.log('hi');
     res.json({ message: 'Hello' });
 });
 
