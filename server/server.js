@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const session = require('express-session');
 const { v4: uuidv4 } = require('uuid'); // For generating CSRF tokens
 const cookieParser = require('cookie-parser');
+const dotenv = require('dotenv').config()
 
 const UsersRouter = require("./routes/usersRouter.js");
 const LoginRouter = require("./routes/loginRouter.js");
@@ -40,6 +41,7 @@ app.use((req, res, next) => {
             sameSite: "Strict" // prevents CSRF attacks  
         }
     );
+    next();
 });
 
 // middleware to validate CSRF token
@@ -51,12 +53,18 @@ const crsfValidation = (req, res, next) => {
     next();
 }
 
+// dummy home page
+app.get('/home', (req, res) => {
+    console.log('hi');
+    res.json({ message: 'Hello' });
+});
+
 // routes
-app.use(crsfValidation, UsersRouter);
-app.use(crsfValidation, LoginRouter);
-app.use(crsfValidation, ProtectedRouter);
+app.use('/', crsfValidation, UsersRouter);
+app.use('/', crsfValidation, LoginRouter);
+app.use('/', crsfValidation, ProtectedRouter);
 
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log('Server running on https://localhost:3000');
+    console.log('Server running on http://localhost:3000');
 });
