@@ -68,11 +68,11 @@ LoginRouter.post(
             if (!res.rows[0].exists) {
                 console.log("User does not exist");
                 // consider adding sleep to prevent sidechannel attacks
-                res.send(403).send({ message: "Invalid username/password"} );
+                res.send(403).json({ message: "Invalid username/password"} );
             }
     
             // check password
-            const passwordQuery = `SELECT password_hash FROM users WHERE username = $1`;
+            const passwordQuery = `SELECT user_uuid, password_hash FROM users WHERE username = $1`;
             const values = [username];
     
             const hashRes = await pool.query(passwordQuery, values);
@@ -82,16 +82,33 @@ LoginRouter.post(
                 const passwordMatch = bcrypt.compare(password, storedHash);
 
                 if (passwordMatch) {
+                    const userUUID = hashRes.rows[0].user_uuid;
+
+                    // Create a JWT token with a short expiry for security
+                    const token = jwt.sign(
+                        { userId: user.id, username: user.username },
+                        process.env.JWT_SECRET,
+                        { expiresIn: '1h' } // Token expires in 1 hour
+                    );
+                
+                    // Set the JWT token as a secure, HttpOnly cookie
+                    res.cookie('token', token, {
+                        httpOnly: true,
+                        secure: true, // Only send cookie over HTTPS
+                        sameSite: 'Strict' // Prevent CSRF
+                    });
+
+
                     console.log("Authentication successful");
-                    res.status(200).send("Authentication successful")
+                    res.status(200).json({ message: "Authentication successful" });
                 } else {
-                    console.log("Authentication failed");
-                    res.status(401).send("Authentication failed");
+                    console.log("Authentication failed - Invalid credentials");
+                    res.status(401).json({ message: "Invalid credentials" });
                 }
             }
         } catch (err) {
             console.error("Error during authentication: ", err);
-            res.status(500).send("Error processing request");
+            res.status(500).json({ message: "Error processing request" });
         }
     }
 );
