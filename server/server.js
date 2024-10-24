@@ -6,7 +6,8 @@ const { v4: uuidv4 } = require('uuid'); // For generating CSRF tokens
 const { body, validationResult, cookie } = require('express-validator');
 const cookieParser = require('cookie-parser');
 
-const { usernameValidator, passwordValidator } = require('./validators.js');
+const { UsersRouter } = require("./routes/usersRouter.js");
+const { LoginRouter } = require("./routes/loginRouter.js");
 
 const app = express();
 
@@ -51,4 +52,6 @@ const crsfValidation = (req, res, next) => {
     next();
 }
 
-
+// routes
+app.use(crsfValidation, UsersRouter);
+app.use(crsfValidation, LoginRouter);
