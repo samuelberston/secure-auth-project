@@ -71,7 +71,7 @@ LoginRouter.post(
     
             const hashRes = await pool.query(passwordQuery, values);
 
-            if (hashRes.rows.length) {
+            if (hashRes.rows.length) { // unnecessary conditional statement?
                 const storedHash = hashRes.rows[0].password_hash;
                 const passwordMatch = bcrypt.compare(password, storedHash);
 
@@ -80,7 +80,7 @@ LoginRouter.post(
 
                     // Create a JWT token with a short expiry for security
                     const token = jwt.sign(
-                        { userId: user.id, username: user.username },
+                        { userId: userUUID, username: user.username },
                         process.env.JWT_SECRET,
                         { expiresIn: '1h' } // Token expires in 1 hour
                     );
