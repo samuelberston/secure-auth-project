@@ -9,6 +9,4 @@ const pool = new Pool({
   port: 5432
 });
 
-// Seed database with a few fake users, until I implement the create user functionality ... 
-
 module.exports = pool;

@@ -1,5 +1,4 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
 const helmet = require('helmet');
 const session = require('express-session');
 const { v4: uuidv4 } = require('uuid'); // For generating CSRF tokens
@@ -37,7 +36,7 @@ app.use((req, res, next) => {
     res.cookie("XSRF-TOKEN", req.session.csrfToken,
         {
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV === "production",
             sameSite: "Strict" // prevents CSRF attacks  
         }
     );

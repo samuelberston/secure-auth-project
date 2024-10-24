@@ -4,9 +4,9 @@
  * 
 */
 
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { body, validationResult } = require("express-validator");
+const bcrypt = require('bcrypt');                           // to compare password against hash
+const jwt = require('jsonwebtoken');                        // to initiate JWT session
+const { validationResult } = require("express-validator");  // to validate credentials
 
 const { usernameValidator, passwordValidator } = require('../validators.js');
 
