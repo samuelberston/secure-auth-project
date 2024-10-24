@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const helmet = require('helmet');
 const session = require('express-session');
 const { v4: uuidv4 } = require('uuid'); // For generating CSRF tokens
-const { body, validationResult, cookie } = require('express-validator');
 const cookieParser = require('cookie-parser');
 
 const { UsersRouter } = require("./routes/usersRouter.js");
@@ -55,3 +54,8 @@ const crsfValidation = (req, res, next) => {
 // routes
 app.use(crsfValidation, UsersRouter);
 app.use(crsfValidation, LoginRouter);
+
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log('Server running on https://localhost:3000');
+  });
