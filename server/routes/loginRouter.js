@@ -1,9 +1,3 @@
-/** 
- *      /login route
- * 
- * 
-*/
-
 const bcrypt = require('bcrypt');                           // to compare password against hash
 const jwt = require('jsonwebtoken');                        // to initiate JWT session
 const { validationResult } = require("express-validator");  // to validate credentials
@@ -12,8 +6,7 @@ const { usernameValidator, passwordValidator } = require('../validators.js');
 
 const LoginRouter = require("express").Router();
 
-// PostgreSQL connect
-const pool = require('../psql.js');
+const pool = require('../psql.js');                         // PostgreSQL connection
 
 /**
  * @route POST /login
