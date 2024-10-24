@@ -18,7 +18,7 @@ const pool = require('../psql.js');                         // PostgreSQL connec
  * 
  * Upon successful validation:
  * - Checks if the user exists in the database.
- * - If the user does not exist, responds with a 403 status and an error message indicating "User does not exist."
+ * - If the user does not exist, responds with a 403 status and an error message indicating "Invalid credentials", to prevent sharing info that could help in flooding attacks.
  * - If the user exists, retrieves the password hash from the database and compares it with the provided password using bcrypt.
  * - If the password matches, returns a 200 status and logs "Authentication successful."
  * - If the password does not match, returns a 401 status with an error message indicating "Authentication failed."
