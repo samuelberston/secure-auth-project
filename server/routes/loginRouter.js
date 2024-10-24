@@ -5,6 +5,7 @@
 */
 
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const { body, validationResult } = require("express-validator");
 
 const { usernameValidator, passwordValidator } = require('../validators.js');
@@ -94,7 +95,7 @@ LoginRouter.post(
                     // Set the JWT token as a secure, HttpOnly cookie
                     res.cookie('token', token, {
                         httpOnly: true,
-                        secure: true, // Only send cookie over HTTPS
+                        secure: process.env.NODE_ENV === "production", // Only send cookie over HTTPS
                         sameSite: 'Strict' // Prevent CSRF
                     });
 

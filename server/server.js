@@ -58,4 +58,4 @@ app.use(crsfValidation, LoginRouter);
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log('Server running on https://localhost:3000');
-  });
+});
