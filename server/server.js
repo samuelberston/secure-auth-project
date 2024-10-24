@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 
 const UsersRouter = require("./routes/usersRouter.js");
 const LoginRouter = require("./routes/loginRouter.js");
+const ProtectedRouter = require("./routes/protectedRouter.js");
 
 const app = express();
 
@@ -54,6 +55,7 @@ const crsfValidation = (req, res, next) => {
 // routes
 app.use(crsfValidation, UsersRouter);
 app.use(crsfValidation, LoginRouter);
+app.use(crsfValidation, ProtectedRouter);
 
 const PORT = 3000;
 app.listen(PORT, () => {
