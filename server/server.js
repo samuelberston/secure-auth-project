@@ -36,22 +36,21 @@ app.use((req, res, next) => {
     }
     res.cookie("XSRF-TOKEN", req.session.csrfToken,
         {
-            httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "Strict" // prevents CSRF attacks  
+            sameSite: "Strict" // site cannot be accessed from other sites  
         }
     );
     next();
 });
 
 // middleware to validate CSRF token
-const crsfValidation = (req, res, next) => {
+const csrfValidation = (req, res, next) => {
     const csrfTokenFromClient = req.headers['x-xsrf-token'] || req.body._csrf;
     if (!csrfTokenFromClient || csrfTokenFromClient !== req.session.csrfToken) {
         return res.status(403).send({ message: "Invalid CSRF token" });
     }
     next();
-}
+};
 
 // dummy home page
 app.get('/home', (req, res) => {
@@ -60,9 +59,9 @@ app.get('/home', (req, res) => {
 });
 
 // routes
-app.use('/', crsfValidation, UsersRouter);
-app.use('/', crsfValidation, LoginRouter);
-app.use('/', crsfValidation, ProtectedRouter);
+app.use('/', csrfValidation, UsersRouter);
+app.use('/', csrfValidation, LoginRouter);
+app.use('/', csrfValidation, ProtectedRouter);
 
 const PORT = 3000;
 app.listen(PORT, () => {
