@@ -12,7 +12,9 @@ const ProtectedRouter = require("./routes/protectedRouter.js");
 const app = express();
 
 // Security middleware
-app.use(helmet()); // TO DO: configure the CSP 
+app.use(helmet({
+    strictTransportSecurity: process.env.NODE_END === "production"
+}));
 app.use(express.json()); // For parsing JSON
 app.use(express.urlencoded({ extended: true })); // For parsing form data
 app.use(cookieParser());
