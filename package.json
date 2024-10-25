@@ -20,5 +20,10 @@
     "pg": "^8.13.0",
     "postgresql": "^0.0.1",
     "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "eslint": "^9.13.0",
+    "globals": "^15.11.0"
   }
 }
