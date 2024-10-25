@@ -3,7 +3,8 @@ const helmet = require('helmet');
 const session = require('express-session');
 const { v4: uuidv4 } = require('uuid'); // For generating CSRF tokens
 const cookieParser = require('cookie-parser');
-const dotenv = require('dotenv').config()
+const dotenv = require('dotenv')
+dotenv.config();
 
 const UsersRouter = require("./routes/usersRouter.js");
 const LoginRouter = require("./routes/loginRouter.js");
@@ -32,7 +33,7 @@ app.use(express.urlencoded({ extended: true })); // For parsing form data
 app.use(cookieParser());
 
 // error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
     console.error(err.stack);
     res.status(500).send('Something broke!');
 });
