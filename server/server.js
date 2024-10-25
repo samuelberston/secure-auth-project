@@ -17,6 +17,12 @@ app.use(express.json()); // For parsing JSON
 app.use(express.urlencoded({ extended: true })); // For parsing form data
 app.use(cookieParser());
 
+// error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
+
 // Set up session management with secure cookies
 app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -41,6 +47,7 @@ app.use((req, res, next) => {
                 sameSite: "Strict" // site cannot be accessed from other sites  
             }
         );
+        next();
     } catch (err) {
         next(err);
     }
