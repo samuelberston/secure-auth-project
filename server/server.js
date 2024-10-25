@@ -36,6 +36,8 @@ app.use(cookieParser());
 // Enable requests from client
 app.use(cors({
     origin: 'http://localhost:8081', // Your client server's origin
+    methods: ["GET, PUT, POST, DELETE"],
+    allowedHeaders: ["Authorization, Origin, X-Requested-With, Content-Type, Accept, data, body"],
     credentials: true, // Allow cookies to be sent and received
     optionsSuccessStatus: 200
 }));
@@ -77,6 +79,7 @@ const csrfValidation = (req, res, next) => {
         if (!csrfTokenFromClient || csrfTokenFromClient !== req.session.csrfToken) {
             return res.status(403).send({ message: "Invalid CSRF token" });
         }
+        next();
     } catch (err) {
         next(err);
     }
