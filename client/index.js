@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 });
 
 // Handle form submission to register a user
-app.post('/register', async (req, res) => {
+app.post('/users', async (req, res) => {
     try {
         // Retrieve the CSRF token from cookies
         const csrfToken = req.cookies['XSRF-TOKEN'];

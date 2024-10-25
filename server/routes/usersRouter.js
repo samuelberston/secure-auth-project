@@ -51,6 +51,7 @@ UsersRouter.post(
       passwordValidator
     ],
     async (req, res) => {
+        console.log("POST /users");
         const result = validationResult(req);
         if (!result.isEmpty()) {
             res.send(403).withMessage("Username/password do not meet requirements");
