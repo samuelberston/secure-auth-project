@@ -13,6 +13,18 @@ const app = express();
 
 // Security middleware
 app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+          "default-src": ["'self'"],
+          "base-uri": ["'self'"],
+          "script-src": ["'self'"],
+          "form-action": ["'self'"],
+          "frame-ancestors": ["'self'"],
+          "object-src": ["'none'"],
+          "script-src-attr": ["'none'"],
+        //   "upgrade-insecure-requests": 1 // uncomment for prod
+        },
+    },    
     strictTransportSecurity: process.env.NODE_END === "production"
 }));
 app.use(express.json()); // For parsing JSON
