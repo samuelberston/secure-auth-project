@@ -13,7 +13,9 @@ const { body } = require('express-validator');
 const reservedUsernames = ['admin', 'root', 'system', 'support'];
 
 const usernameValidator = body('username')
-  .isLength({ min: 3, max: 30 })
+  .isLength({ min: 3 })
+  .withMessage('Username must be between 3 and 30 characters long')
+  .isLength({ max: 30 })
   .withMessage('Username must be between 3 and 30 characters long')
   .matches(/^[a-zA-Z0-9._]+$/)
   .withMessage('Username must contain only letters, numbers, underscores, or periods')
