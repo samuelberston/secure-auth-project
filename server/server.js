@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const session = require('express-session');
 const { v4: uuidv4 } = require('uuid'); // For generating CSRF tokens
 const cookieParser = require('cookie-parser');
+const cors = require("cors");
 const dotenv = require('dotenv')
 dotenv.config();
 
@@ -31,6 +32,13 @@ app.use(helmet({
 app.use(express.json()); // For parsing JSON
 app.use(express.urlencoded({ extended: true })); // For parsing form data
 app.use(cookieParser());
+
+// Enable requests from client
+app.use(cors({
+    origin: 'http://localhost:8081', // Your client server's origin
+    credentials: true, // Allow cookies to be sent and received
+    optionsSuccessStatus: 200
+}));
 
 // Set up session management with secure cookies
 app.use(session({
@@ -74,7 +82,7 @@ const csrfValidation = (req, res, next) => {
     }
 };
 
-// Route to initialize session and CSRF token
+// Route to initialize session and CSRF token - notice CSRF middleware not used here
 app.get('/init-session', (req, res) => {
     // The CSRF middleware will run before this route handler
     res.sendStatus(200); // Respond with OK status
