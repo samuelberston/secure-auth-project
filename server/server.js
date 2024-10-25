@@ -61,7 +61,7 @@ app.use((req, res, next) => {
         res.cookie("XSRF-TOKEN", req.session.csrfToken,
             {
                 secure: process.env.NODE_ENV === "production",
-                sameSite: "Strict" // site cannot be accessed from other sites  
+                sameSite: "Lax" // Allows cookies to be sent with top-level navigation GET requests (suitable for initial requests).  
             }
         );
         next();
