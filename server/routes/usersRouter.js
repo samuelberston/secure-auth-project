@@ -2,7 +2,7 @@
  *      Users route
  */
 
-const { uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 const { validationResult } = require('express-validator');
 
 const pool = require('../psql.js');  // PostgreSQL connection
@@ -68,11 +68,11 @@ UsersRouter.post(
         
           const res = await pool.query(query, values);
           console.log('User created with ID:', res.rows[0].id);
-          res.send(201).send("Created new user");
+          res.status(201).send("Created new user");
 
         } catch (err) {
           console.error('Error creating user:', err);
-          res.send(500).send("Failed to create user");
+          res.status(500).send("Failed to create user");
         }
     }
 );
