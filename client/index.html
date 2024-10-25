@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Registration</title>
+</head>
+<body>
+    <h1>Register User</h1>
+    <form action="/register" method="POST">
+        <label for="username">Username:</label><br>
+        <input type="text" name="username" id="username" required><br><br>
+
+        <label for="password">Password:</label><br>
+        <input type="password" name="password" id="password" required><br><br>
+
+        <!-- Hidden CSRF token field -->
+        <input type="hidden" name="_csrf" value="">
+
+        <button type="submit">Register</button>
+    </form>
+
+    <script>
+        // Function to get a cookie by name
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        // Function to make an initial request to the backend
+        function initializeSession() {
+            fetch('http://localhost:3000/init-session', {
+                method: 'GET',
+                credentials: 'include' // Important to include credentials
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                // After the request, the cookies should be set
+                const csrfToken = getCookie('XSRF-TOKEN');
+                document.querySelector('input[name="_csrf"]').value = csrfToken;
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+        }
+
+        // Initialize session on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeSession();
+        });
+
+        // Set CSRF token in the hidden form field
+        document.addEventListener('DOMContentLoaded', () => {
+            const csrfToken = getCookie('XSRF-TOKEN');
+            document.querySelector('input[name="_csrf"]').value = csrfToken;
+        });
+    </script>
+</body>
+</html>

@@ -32,12 +32,6 @@ app.use(express.json()); // For parsing JSON
 app.use(express.urlencoded({ extended: true })); // For parsing form data
 app.use(cookieParser());
 
-// error handling middleware
-app.use((err, req, res) => {
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
-});
-
 // Set up session management with secure cookies
 app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -79,6 +73,12 @@ const csrfValidation = (req, res, next) => {
         next(err);
     }
 };
+
+// Route to initialize session and CSRF token
+app.get('/init-session', (req, res) => {
+    // The CSRF middleware will run before this route handler
+    res.sendStatus(200); // Respond with OK status
+});
 
 // dummy home page
 app.get('/home', (req, res) => {
