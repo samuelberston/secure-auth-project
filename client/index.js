@@ -50,6 +50,38 @@ app.post('/users', async (req, res) => {
     }
 });
 
+app.post('/login', async (req, res) => {
+    try {
+        console.log("POST /login");
+
+        // Retrieve the CSRF token from cookies
+        const csrfToken = req.cookies['XSRF-TOKEN'];
+        if (!csrfToken) {
+            return res.status(403).send('CSRF token not found.');
+        }
+
+        // Prepare user data and include the CSRF token
+        const userData = {
+            username: req.body.username,
+            password: req.body.password,
+            _csrf: csrfToken // Include CSRF token in the body
+        };
+
+        const response = await axios.post('http://localhost:3000/login', userData, {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-xsrf-token': csrfToken, // Include CSRF token in headers
+                'Cookie': `connect.sid=${req.cookies['connect.sid']}` // Include session cookie
+            },
+            withCredentials: true
+        });
+        res.send('Logged in');
+    } catch (error) {
+        console.error('Error logging in:', error.response ? error.response.data : error.message);
+        res.status(500).send('Error logging in.');
+    }
+});
+
 const PORT = 8081;
 app.listen(PORT, () => {
     console.log(`Client server running on http://localhost:${PORT}`);

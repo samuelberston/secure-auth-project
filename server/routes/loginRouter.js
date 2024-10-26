@@ -50,19 +50,22 @@ LoginRouter.post(
         // validate credentials
         const result = validationResult(req);       
         if (!result.isEmpty()) {
+            // add sleep
             return res.status(403).send({ message: "Invalid username/password" });
         }
 
         const { username, password } = req.body;
 
         try {
+            console.log("POST /login");
             // check user exists
             const userQuery = `SELECT EXISTS(SELECT 1 FROM users WHERE username = $1);`;
             const userRes = await pool.query(userQuery, [username]);
-            if (!res.rows[0].exists) {
+            console.log(userRes);
+            if (!userRes.rows[0].exists) {
                 console.log("User does not exist");
                 // consider adding sleep to prevent sidechannel attacks
-                res.send(403).json({ message: "Invalid username/password"} );
+                res.send(403).json({ message: "Invalid credentials"} );
             }
     
             // check password
@@ -80,7 +83,7 @@ LoginRouter.post(
 
                     // Create a JWT token with a short expiry for security
                     const token = jwt.sign(
-                        { userId: userUUID, username: user.username },
+                        { userId: userUUID, username: username },
                         process.env.JWT_SECRET,
                         { expiresIn: '1h' } // Token expires in 1 hour
                     );

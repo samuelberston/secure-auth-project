@@ -19,6 +19,20 @@
         <button type="submit">Register</button>
     </form>
 
+    <h1>Login</h1>
+    <form action="/login" method="POST">
+        <label for="username">Username:</label><br>
+        <input type="text" name="username" id="username" required><br><br>
+
+        <label for="password">Password:</label><br>
+        <input type="password" name="password" id="password" required><br><br>
+
+        <!-- Hidden CSRF token field -->
+        <input type="hidden" name="_csrf" value="">
+
+        <button type="submit">Login</button>
+    </form>
+
     <script>
         // Function to get a cookie by name
         function getCookie(name) {
@@ -48,9 +62,10 @@
 
         // Initialize session oand set CSRF token on page load
         document.addEventListener('DOMContentLoaded', () => {
-            initializeSession();
-            const csrfToken = getCookie('XSRF-TOKEN');
-            document.querySelector('input[name="_csrf"]').value = csrfToken;
+            initializeSession().then(() => {
+                const csrfToken = getCookie('XSRF-TOKEN');
+                document.querySelector('input[name="_csrf"]').value = csrfToken;
+            });
         });
     </script>
 </body>
