@@ -92,7 +92,7 @@ LoginRouter.post(
                     res.cookie('token', token, {
                         httpOnly: true,
                         secure: process.env.NODE_ENV === "production", // Only send cookie over HTTPS
-                        sameSite: 'Strict' // Prevent CSRF
+                        sameSite: 'Lax'
                     });
 
                     console.log("Authentication successful");
