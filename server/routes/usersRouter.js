@@ -50,11 +50,10 @@ UsersRouter.post(
       usernameValidator,
       passwordValidator
     ],
-    async (req, res) => {
-        console.log("POST /users");
+    async (req, res, next) => {
         const result = validationResult(req);
         if (!result.isEmpty()) {
-            res.send(403).withMessage("Username/password do not meet requirements");
+            res.status(403).send("Username/password do not meet requirements");
         }
 
         const { username, password } = req.body;
@@ -66,8 +65,8 @@ UsersRouter.post(
           const query = `INSERT INTO users (user_uuid, username, password_hash, salt) VALUES ($1, $2, $3, $4) RETURNING user_uuid`;
           const values = [user_uuid, username, hash, salt];
         
-          const res = await pool.query(query, values);
-          console.log('User created with ID:', res.rows[0].id);
+          const userUuid = await pool.query(query, values);
+          console.log('User created with ID:', userUuid);
           res.status(201).send("Created new user");
 
         } catch (err) {

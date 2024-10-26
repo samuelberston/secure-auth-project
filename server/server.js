@@ -49,8 +49,8 @@ app.use(session({
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict" // prevents CSRF attacks
+        secure: false, // for development
+        sameSite: "Lax"
     }
 }));
 
@@ -60,12 +60,10 @@ app.use((req, res, next) => {
         if (!req.session.csrfToken) {
             req.session.csrfToken = uuidv4(); // generate a new CSRF token
         }
-        res.cookie("XSRF-TOKEN", req.session.csrfToken,
-            {
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "Lax" // Allows cookies to be sent with top-level navigation GET requests (suitable for initial requests).  
-            }
-        );
+        res.cookie("XSRF-TOKEN", req.session.csrfToken, {
+            secure: false, // for development
+            sameSite: "Lax" // Allows cookies to be sent with top-level navigation GET requests (suitable for initial requests).  
+        });
         next();
     } catch (err) {
         next(err);
@@ -76,7 +74,11 @@ app.use((req, res, next) => {
 const csrfValidation = (req, res, next) => {
     try {
         const csrfTokenFromClient = req.headers['x-xsrf-token'] || req.body._csrf;
+        console.log('Received CSRF Token:', csrfTokenFromClient);
+        console.log('Session CSRF Token:', req.session.csrfToken);
         if (!csrfTokenFromClient || csrfTokenFromClient !== req.session.csrfToken) {
+            console.log("csrf token: ", csrfTokenFromClient);
+            console.log("req.session.csrfToken: ", req.session.csrfToken);
             return res.status(403).send({ message: "Invalid CSRF token" });
         }
         next();
@@ -85,15 +87,17 @@ const csrfValidation = (req, res, next) => {
     }
 };
 
+// debugging
+app.use((req, res, next) => {
+    console.log('Session ID:', req.session.id);
+    console.log('Session:', req.session);
+    next();
+});
+
 // Route to initialize session and CSRF token - notice CSRF middleware not used here
 app.get('/init-session', (req, res) => {
     // The CSRF middleware will run before this route handler
     res.sendStatus(200); // Respond with OK status
-});
-
-// dummy home page
-app.get('/home', (req, res) => {
-    res.json({ message: 'Hello' });
 });
 
 // routes
