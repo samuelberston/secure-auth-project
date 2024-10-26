@@ -46,13 +46,9 @@
             });
         }
 
-        // Initialize session on page load
+        // Initialize session oand set CSRF token on page load
         document.addEventListener('DOMContentLoaded', () => {
             initializeSession();
-        });
-
-        // Set CSRF token in the hidden form field
-        document.addEventListener('DOMContentLoaded', () => {
             const csrfToken = getCookie('XSRF-TOKEN');
             document.querySelector('input[name="_csrf"]').value = csrfToken;
         });
