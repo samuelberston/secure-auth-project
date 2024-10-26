@@ -81,15 +81,17 @@ LoginRouter.post(
                 if (passwordMatch) {
                     const userUUID = hashRes.rows[0].user_uuid;
 
-                    // Create a JWT token with a short expiry for security
-                    const token = jwt.sign(
-                        { userId: userUUID, username: username },
-                        process.env.JWT_SECRET,
-                        { expiresIn: '1h' } // Token expires in 1 hour
-                    );
+                    if (!req.session.token) {
+                        // Create a JWT token with a short expiry for security
+                        req.session.token = jwt.sign(
+                            { userId: userUUID, username: username },
+                            process.env.JWT_SECRET,
+                            { expiresIn: '1h' } // Token expires in 1 hour
+                        );
+                    }
                 
                     // Set the JWT token as a secure, HttpOnly cookie
-                    res.cookie('token', token, {
+                    res.cookie('token', req.session.token, {
                         httpOnly: true,
                         secure: process.env.NODE_ENV === "production", // Only send cookie over HTTPS
                         sameSite: 'Lax'
