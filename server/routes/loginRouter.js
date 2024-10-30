@@ -91,7 +91,10 @@ LoginRouter.post(
                     }
 
                     console.log("Authentication successful");
-                    res.status(200).json({ message: "Authentication successful" });
+                    res.status(200).json({ 
+                        token: req.session.token,
+                        message: "Authentication successful" 
+                    });
                 } else {
                     console.log("Authentication failed - Invalid credentials");
                     res.status(401).json({ message: "Invalid credentials" });
