@@ -5,6 +5,7 @@
     <title>User Registration</title>
 </head>
 <body>
+    <!-- Registration form -->
     <h1>Register User</h1>
     <form id="register-form">
         <label for="username">Username:</label><br>
@@ -16,6 +17,8 @@
         <button type="submit" id="register-button">Register</button>
     </form>
 
+
+    <!-- Login Form -->
     <h1>Login</h1>
     <form id="login-form">
         <label for="username">Username:</label><br>
@@ -27,8 +30,15 @@
         <button type="submit" id="login-button">Login</button>
     </form>
 
-    <h1>Access Protected Data</h1>
-    <button id="access-protected">Get Protected Data</button>
+    <!-- Protected Content -->
+    <div id="protected-content">
+        <h2>Protected Data</h2>
+        <button id="fetch-protected">Fetch Protected Data</button>
+        <pre id="protected-data"></pre>
+    </div>
+
+    <!-- Logout Button -->
+    <button id="logout-button">Logout</button>
 
     <!-- axios dependency-->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

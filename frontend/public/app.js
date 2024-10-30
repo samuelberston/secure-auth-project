@@ -58,8 +58,15 @@ async function handleLogin(event) {
 
             // Store token in localStorage
             localStorage.setItem('token', token);
+
+            // Update UI
+            // document.getElementById('login-form').style.display = 'none';
+            // document.getElementById('protected-section').style.display = 'block';
+            // document.getElementById('logout-button').style.display = 'block';
+            alert('Login successful!');
         } else {
-            throw new Error('Login failed');
+            console.log('Login failed');
+            alert('Login failed. Please check your credentials.');
         }
     } catch (err) {
         console.error(err);
@@ -78,6 +85,35 @@ function handleLogout() {
     alert('Logged out successfully.');
 }
 
+// access protected
+async function accessProtected() {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+        alert('No token found. Please log in.');
+        return;
+    }
+
+    try {
+        const response = await axios.get('http://localhost:3000/protected', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            withCredentials: true
+        });
+
+        if (response.status === 200) {
+            const { data } = response.data;
+            document.getElementById('protected-data').textContent = JSON.stringify(data, null, 2);
+        } else {
+            throw new Error(response);
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 // init function
 async function init() {
     // initialize session and get CSRF token
@@ -90,6 +126,15 @@ async function init() {
     // Event listeners
     document.getElementById('register-form').addEventListener('submit', handleRegistration);
     document.getElementById('login-form').addEventListener('submit', handleLogin);
+    document.getElementById('fetch-protected').addEventListener('click', accessProtected);
+
+    // Check if token exists on page load
+    const token = localStorage.getItem('token');
+    if (token) {
+        // document.getElementById('login-form').style.display = 'none';
+        // document.getElementById('protected-content').style.display = 'block';
+        // document.getElementById('logout-button').style.display = 'block';
+    }
 }
 
 // Run initialization on DOMContentLoaded
