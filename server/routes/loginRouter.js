@@ -89,13 +89,6 @@ LoginRouter.post(
                             { expiresIn: '1h' } // Token expires in 1 hour
                         );
                     }
-                
-                    // Set the JWT token as a secure, HttpOnly cookie
-                    res.cookie('token', req.session.token, {
-                        httpOnly: true,
-                        secure: process.env.NODE_ENV === "production", // Only send cookie over HTTPS
-                        sameSite: 'Lax'
-                    });
 
                     console.log("Authentication successful");
                     res.status(200).json({ message: "Authentication successful" });
