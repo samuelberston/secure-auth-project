@@ -5,7 +5,7 @@
 const jwt = require('jsonwebtoken');
 const ProtectedRouter = require('express').Router();
 
-ProtectedRouter.get('/protected', (req, res) => {
+ProtectedRouter.get('/', (req, res) => {
     const token = req.cookies.token;
     if (!token) {
         res.status(401).json({ message: 'Unauthorized' });

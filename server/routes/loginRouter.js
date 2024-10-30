@@ -41,7 +41,7 @@ const pool = require('../psql.js');                         // PostgreSQL connec
  * - pool: Database connection pool for querying user data.
  */
 LoginRouter.post(
-    '/login',
+    '/',
     [
         usernameValidator,
         passwordValidator

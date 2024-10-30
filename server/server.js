@@ -4,6 +4,7 @@ const session = require('express-session');
 const { v4: uuidv4 } = require('uuid'); // For generating CSRF tokens
 const cookieParser = require('cookie-parser');
 const cors = require("cors");
+const csurf = require('csurf');
 const dotenv = require('dotenv')
 dotenv.config();
 
@@ -36,8 +37,8 @@ app.use(cookieParser());
 // Enable requests from client
 app.use(cors({
     origin: 'http://localhost:8081', // Your client server's origin
-    methods: ["GET, PUT, POST, DELETE"],
-    allowedHeaders: ["Authorization, Origin, X-Requested-With, Content-Type, Accept, data, body"],
+    methods: ["GET", "PUT", "POST", "DELETE"],
+    allowedHeaders: ["Authorization", "Origin", "X-Requested-With", "Content-Type", "Accept", "data", "body", "X-XSRF-TOKEN"],
     credentials: true, // Allow cookies to be sent and received
     optionsSuccessStatus: 200
 }));
@@ -54,38 +55,47 @@ app.use(session({
     }
 }));
 
-// CSRF middleware to store token in secure cookie
-app.use((req, res, next) => {
-    try {
-        if (!req.session.csrfToken) {
-            req.session.csrfToken = uuidv4(); // generate a new CSRF token
-        }
-        res.cookie("XSRF-TOKEN", req.session.csrfToken, {
-            secure: false, // for development
-            sameSite: "Lax" // Allows cookies to be sent with top-level navigation GET requests (suitable for initial requests).  
-        });
-        next();
-    } catch (err) {
-        next(err);
+// csurf
+const csrfProtection = csurf({
+    cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'Lax',
     }
 });
 
+// CSRF middleware to store token in secure cookie
+// app.use((req, res, next) => {
+//     try {
+//         if (!req.session.csrfToken) {
+//             req.session.csrfToken = uuidv4(); // generate a new CSRF token
+//         }
+//         res.cookie("XSRF-TOKEN", req.session.csrfToken, {
+//             secure: false, // for development
+//             sameSite: "Lax" // Allows cookies to be sent with top-level navigation GET requests (suitable for initial requests).  
+//         });
+//         next();
+//     } catch (err) {
+//         next(err);
+//     }
+// });
+
 // middleware to validate CSRF token
-const csrfValidation = (req, res, next) => {
-    try {
-        const csrfTokenFromClient = req.headers['x-xsrf-token'] || req.body._csrf;
-        console.log('Received CSRF Token:', csrfTokenFromClient);
-        console.log('Session CSRF Token:', req.session.csrfToken);
-        if (!csrfTokenFromClient || csrfTokenFromClient !== req.session.csrfToken) {
-            console.log("csrf token: ", csrfTokenFromClient);
-            console.log("req.session.csrfToken: ", req.session.csrfToken);
-            return res.status(403).send({ message: "Invalid CSRF token" });
-        }
-        next();
-    } catch (err) {
-        next(err);
-    }
-};
+// const csrfValidation = (req, res, next) => {
+//     try {
+//         const csrfTokenFromClient = req.headers["X-XSRF-TOKEN"] || req.body._csrf;
+//         console.log('Received CSRF Token:', csrfTokenFromClient);
+//         console.log('Session CSRF Token:', req.session.csrfToken);
+//         if (!csrfTokenFromClient || csrfTokenFromClient !== req.session.csrfToken) {
+//             console.log("csrf token: ", csrfTokenFromClient);
+//             console.log("req.session.csrfToken: ", req.session.csrfToken);
+//             return res.status(403).send({ message: "Invalid CSRF token" });
+//         }
+//         next();
+//     } catch (err) {
+//         next(err);
+//     }
+// };
 
 // debugging
 app.use((req, res, next) => {
@@ -101,9 +111,9 @@ app.get('/init-session', (req, res) => {
 });
 
 // routes
-app.use('/', csrfValidation, UsersRouter);
-app.use('/', csrfValidation, LoginRouter);
-app.use('/', csrfValidation, ProtectedRouter);
+app.use('/users', UsersRouter);
+app.use('/login', LoginRouter);
+app.use('/protected', ProtectedRouter);
 
 const PORT = 3000;
 app.listen(PORT, () => {

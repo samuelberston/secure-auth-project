@@ -45,15 +45,16 @@ const hashPassword = async (password) => {
  * - 500: If an internal server error occurs while creating the user.
  */
 UsersRouter.post(
-    '/users',
+    '/',
     [
       usernameValidator,
       passwordValidator
     ],
     async (req, res, next) => {
+        console.log("POST /users");
         const result = validationResult(req);
         if (!result.isEmpty()) {
-            res.status(403).send("Username/password do not meet requirements");
+            res.status(403).json({ message: "Username/password do not meet requirements" });
         }
 
         const { username, password } = req.body;
@@ -67,11 +68,11 @@ UsersRouter.post(
         
           const userUuid = await pool.query(query, values);
           console.log('User created with ID:', userUuid);
-          res.status(201).send("Created new user");
+          res.status(201).json({ message: "Created new user" });
 
         } catch (err) {
           console.error('Error creating user:', err);
-          res.status(500).send("Failed to create user");
+          res.status(500).json({ message: "Failed to create user" });
         }
     }
 );
