@@ -13,14 +13,16 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Proxy configuration: forward API requests to the backend server
-app.use('/api', createProxyMiddleware({
+const proxyMiddleware = createProxyMiddleware({
     target: 'http://localhost:3000', // backend server
     changeOrigin: true,
     pathRewrite: {
         '^/api': '', // Remove '/api' prefix when forwarding
     },
     secure: false, // development environment
-}));
+})
+
+app.use('/api', proxyMiddleware);
 
 // Route to serve the registration form
 app.get('*', (req, res) => {
