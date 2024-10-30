@@ -1,3 +1,5 @@
+
+
 // Function to get a cookie by name
 function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -105,7 +107,10 @@ async function accessProtected() {
 
         if (response.status === 200) {
             const { data } = response.data;
-            document.getElementById('protected-data').textContent = JSON.stringify(data, null, 2);
+
+            // sanitize the data before insertin into DOM
+            const sanitizedData = DOMPurify.sanitize(JSON.stringify(data, null, 2))
+            document.getElementById('protected-data').innerHTML = sanitizedData;
         } else {
             throw new Error(response);
         }
