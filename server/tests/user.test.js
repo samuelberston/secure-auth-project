@@ -26,9 +26,19 @@ app.use(session({
 // Use your routers
 app.use('/users', UsersRouter);
 
-const testUsername = `testyuser${Math.floor(Math.random() * 100)}`;
+let testUsername = `testuser${Math.floor(Math.random() * 100)}`;
 
 describe('POST /users', () => {
+    beforeEach(() => {
+        // reset the test username
+        testUsername = `testuser${Math.floor(Math.random() * 100)}`;
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+
     it('should create a new user with valid credentials', async () => {
         const response = await request(app)
             .post('/users')
