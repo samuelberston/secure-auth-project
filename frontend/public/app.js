@@ -128,6 +128,7 @@ async function accessProtected() {
 
             // sanitize the data before insertin into DOM
             const sanitizedData = DOMPurify.sanitize(JSON.stringify(data, null, 2))
+            document.getElementById('fetch-protected').style.display = 'none';
             document.getElementById('protected-data').innerHTML = sanitizedData;
         } else {
             throw new Error(response);
