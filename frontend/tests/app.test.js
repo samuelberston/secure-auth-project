@@ -202,7 +202,7 @@ describe('Frontend Application Tests', () => {
             await Promise.resolve(process.nextTick);   
 
             // Mock successful protected content response
-            axios.get.mockResolvedValue({ status: 200, data: 'Protected data' });
+            axios.get.mockResolvedValue({ status: 200, data: { data: 'This is protected data.' } });
 
             // Simulate click event
             const fetchProtectedButton = document.getElementById('fetch-protected');
@@ -222,7 +222,7 @@ describe('Frontend Application Tests', () => {
             console.log("Protected data:", document.getElementById('protected-data').innerHTML);
             
             // not working
-            // expect(document.getElementById('protected-data')).toHaveTextContent('This is protected data.');
+            expect(document.getElementById('protected-data')).toHaveTextContent('This is protected data.');
         });
     });
 });

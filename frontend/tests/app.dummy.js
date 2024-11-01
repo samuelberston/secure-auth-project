@@ -1,4 +1,5 @@
 import axios from 'axios'; // for testing, the axios dependency is imported into the browser through CDN
+import DOMPurify from 'dompurify';
 
 // Function to get a cookie by name
 function getCookie(name) {
@@ -98,6 +99,7 @@ async function accessProtected() {
     }
 
     try {
+        console.log("accessProtected: token: ", token);
         const response = await axios.get('http://localhost:3000/protected', {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -108,9 +110,9 @@ async function accessProtected() {
 
         if (response.status === 200) {
             const { data } = response.data;
-
+            
             // sanitize the data before insertin into DOM
-            const sanitizedData = DOMPurify.sanitize(JSON.stringify(data, null, 2))
+            const sanitizedData = DOMPurify.sanitize(JSON.stringify(data, null, 2));
             document.getElementById('protected-data').innerHTML = sanitizedData;
         } else {
             throw new Error(response);
