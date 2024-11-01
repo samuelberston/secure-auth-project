@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from 'axios'; // for testing, the axios dependency is imported into the browser through CDN
 
 // Function to get a cookie by name
 function getCookie(name) {

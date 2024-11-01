@@ -10,90 +10,118 @@ jest.mock('axios', () => ({
 import axios from 'axios';
 
 import app from '../public/app.js';
-const { handleLogin } = app;
+const { handleLogin, handleRegistration, accessProtected } = app;
 
-describe('Login functionality', () => {
+describe('Frontend Application Tests', () => {
     beforeEach(() => {
+        // Reset mocks before each test
+        axios.post.mockReset();
+
         // Clear localStorage at the start of each test
         localStorage.clear();
         
-        // Reset the mock before each test
-        axios.post.mockReset();
-
-        // Set up DOM elements
+        // Set up a fresh DOM before each test
         document.body.innerHTML = `
-            <!-- Login Form -->
-            <h1>Login</h1>
-            <form id="login-form">
-                <label for="login-username">Username:</label><br>
-                <input type="text" name="username" id="login-username" required><br><br>
+        <!-- Registration form -->
+        <h1>Register User</h1>
+        <form id="register-form">
+            <label for="register-username">Username:</label><br>
+            <input type="text" name="username" id="register-username" required><br><br>
 
-                <label for="login-password">Password:</label><br>
-                <input type="password" name="password" id="login-password" required><br><br>
+            <label for="register-password">Password:</label><br>
+            <input type="password" name="password" id="register-password" required><br><br>
 
-                <button type="submit" id="login-button">Login</button>
-            </form>
+            <button type="submit" id="register-button">Register</button>
+        </form>
+
+
+        <!-- Login Form -->
+        <h1>Login</h1>
+        <form id="login-form">
+            <label for="login-username">Username:</label><br>
+            <input type="text" name="username" id="login-username" required><br><br>
+
+            <label for="login-password">Password:</label><br>
+            <input type="password" name="password" id="login-password" required><br><br>
+
+            <button type="submit" id="login-button">Login</button>
+        </form>
+
+        <!-- Protected Content -->
+        <div id="protected-content">
+            <h2>Protected Data</h2>
+            <button id="fetch-protected">Fetch Protected Data</button>
+            <pre id="protected-data"></pre>
+        </div>
+
+        <!-- Logout Button -->
+        <button id="logout-button">Logout</button>
         `;
-    
-        // Attach event listeners
-        document.getElementById('login-form').addEventListener('submit', handleLogin);
+
+            // Attach event listeners
+            document.getElementById('register-form').addEventListener('submit', handleRegistration);
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            document.getElementById('fetch-protected').addEventListener('click', accessProtected);
     });
 
     afterEach(() => {
         jest.clearAllMocks();
+        document.body.innerHTML = '';
     });
 
-    it('should authenticate a user with valid credentials', async () => {
-        // Mock successful login response
-        axios.post.mockResolvedValue({
-            status: 200,
-            data: { token: 'test-jwt-token' }
+    describe('Login functionality', () => {
+        it('should authenticate a user with valid credentials', async () => {
+            // Mock successful login response
+            axios.post.mockResolvedValue({
+                status: 200,
+                data: { token: 'test-jwt-token' }
+            });
+
+            // Simulate user input and form submission
+            const usernameInput = document.getElementById('login-username');
+            const passwordInput = document.getElementById('login-password');
+
+            fireEvent.change(usernameInput, { target: { value: 'flarbene' } });
+            fireEvent.change(passwordInput, { target: { value: 'Flarbene123!' } });
+            fireEvent.submit(document.getElementById('login-form'));    
+
+            // Wait for promises to resolve
+            await Promise.resolve(process.nextTick);     
+        
+            expect(axios.post).toHaveBeenCalledWith('http://localhost:3000/login',
+                { username: 'flarbene', password: 'Flarbene123!' },
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                    withCredentials: true
+                }
+            );
+        
+            expect(localStorage.getItem('token')).toBe('test-jwt-token');
         });
 
-        // Simulate user input and form submission
-        const usernameInput = getByLabelText(document.body, 'Username:');
-        const passwordInput = getByLabelText(document.body, 'Password:');
+        it('should handle login failure', async () => {
+            // Mock failed login response
+            axios.post.mockRejectedValue({ status: 401 });
 
-        fireEvent.change(usernameInput, { target: { value: 'flarbene' } });
-        fireEvent.change(passwordInput, { target: { value: 'Flarbene123!' } });
-        fireEvent.submit(document.getElementById('login-form'));    
+            // Simulate user input and form submission
+            const usernameInput = document.getElementById('login-username');
+            const passwordInput = document.getElementById('login-password');
 
-        // Wait for promises to resolve
-        await Promise.resolve(process.nextTick);     
-      
-        expect(axios.post).toHaveBeenCalledWith('http://localhost:3000/login',
-            { username: 'flarbene', password: 'Flarbene123!' },
-            {
-                headers: { 'Content-Type': 'application/json' },
-                withCredentials: true
-            }
-        );
-      
-        expect(localStorage.getItem('token')).toBe('test-jwt-token');
-    });
+            fireEvent.change(usernameInput, { target: { value: 'fakeuser' } });
+            fireEvent.change(passwordInput, { target: { value: 'invalidpassword!' } });
+            fireEvent.submit(document.getElementById('login-form'));
 
-    it('should handle login failure', async () => {
-        // Mock failed login response
-        axios.post.mockRejectedValue({ status: 401 });
+            // Wait for promises to resolve
+            await Promise.resolve(process.nextTick);
 
-        // Simulate user input and form submission
-        const usernameInput = getByLabelText(document.body, 'Username:');
-        const passwordInput = getByLabelText(document.body, 'Password:');
-
-        fireEvent.change(usernameInput, { target: { value: 'fakeuser' } });
-        fireEvent.change(passwordInput, { target: { value: 'invalidpassword!' } });
-        fireEvent.submit(document.getElementById('login-form'));
-
-        // Wait for promises to resolve
-        await Promise.resolve(process.nextTick);
-
-        expect(axios.post).toHaveBeenCalledWith('http://localhost:3000/login', 
-            { username: 'fakeuser', password: 'invalidpassword!' },
-            {
-                headers: { 'Content-Type': 'application/json' },
-                withCredentials: true
-            }
-        );
-        expect(localStorage.getItem('token')).toBeNull();
+            expect(axios.post).toHaveBeenCalledWith('http://localhost:3000/login', 
+                { username: 'fakeuser', password: 'invalidpassword!' },
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                    withCredentials: true
+                }
+            );
+            expect(localStorage.getItem('token')).toBeNull();
+        });
     });
 });
