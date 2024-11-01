@@ -1,12 +1,14 @@
-const bcrypt = require('bcrypt');                           // to compare password against hash
-const jwt = require('jsonwebtoken');                        // to initiate JWT session
-const { validationResult } = require("express-validator");  // to validate credentials
+const bcrypt = require('bcrypt');                           // Compare password against hash
+const jwt = require('jsonwebtoken');                        // Initiate JWT session
+const { validationResult } = require("express-validator");  // Validate credentials
 
+// Validation middleware
 const { usernameValidator, passwordValidator } = require('../validators.js');
 
-const LoginRouter = require("express").Router();
+// PostgreSQL connection
+const pool = require('../psql.js');                         
 
-const pool = require('../psql.js');                         // PostgreSQL connection
+const LoginRouter = require("express").Router();
 
 /**
  * @route POST /login
@@ -34,11 +36,6 @@ const pool = require('../psql.js');                         // PostgreSQL connec
  * - 401: If the password does not match the stored hash (authentication failed).
  * - 403: If validation fails (username or password does not meet the criteria) or the user does not exist.
  * - 500: If an internal server error occurs during the authentication process.
- * 
- * @dependencies
- * - bcrypt: Used for comparing the stored password hash with the provided password.
- * - express-validator: Used for input validation (username and password).
- * - pool: Database connection pool for querying user data.
  */
 LoginRouter.post(
     '/',
@@ -47,10 +44,10 @@ LoginRouter.post(
         passwordValidator
     ],
     async (req, res) => {
-        // validate credentials
+        // validate credentials meet requirements
         const result = validationResult(req);       
         if (!result.isEmpty()) {
-            // add sleep
+            // add sleep to prevent side-channel attacks
             return res.status(401).send({ message: "Invalid credentials" });
         }
 
@@ -61,17 +58,16 @@ LoginRouter.post(
             // check user exists
             const userQuery = `SELECT EXISTS(SELECT 1 FROM users WHERE username = $1);`;
             const userRes = await pool.query(userQuery, [username]);
-            console.log(userRes);
+            console.log("username: ", userRes);
             if (!userRes.rows[0].exists) {
-                console.log("User does not exist");
-                // consider adding sleep to prevent sidechannel attacks
+                console.log(`User ${username} does not exist`);
                 res.send(401).json({ message: "Invalid credentials"} );
             }
     
             // check password
             const passwordQuery = `SELECT user_uuid, password_hash FROM users WHERE username = $1`;
             const values = [username];
-    
+            
             const hashRes = await pool.query(passwordQuery, values);
 
             if (hashRes.rows.length) { // unnecessary conditional statement?

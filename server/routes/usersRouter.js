@@ -2,14 +2,14 @@
  *      Users route
  */
 
-const { v4: uuidv4 } = require('uuid');
-const { validationResult } = require('express-validator');
+const { v4: uuidv4 } = require('uuid');                     // Generate user UUID
+const { validationResult } = require('express-validator');  // Validate credentials
 
-const pool = require('../psql.js');  // PostgreSQL connection
+const pool = require('../psql.js');                         // PostgreSQL connection
 
 const UsersRouter = require('express').Router();
 
-const { usernameValidator, passwordValidator } = require('../validators')
+const { usernameValidator, passwordValidator } = require('../validators');
 
 // Hash the password with salt
 const bcrypt = require('bcrypt');
@@ -65,7 +65,7 @@ UsersRouter.post(
           const userRes = await pool.query(userQuery, [username]);
 
           if (userRes.rows[0].exists) {
-              console.log("User already exists");
+              console.log(`User ${username} already exists`);
               // consider adding sleep to prevent sidechannel attacks
               return res.status(409).json({ message: "Error creating user"} );
           }
