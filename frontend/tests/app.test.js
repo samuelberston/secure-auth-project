@@ -1,5 +1,5 @@
 // frontend/tests/app.test.js
-import { fireEvent, getByLabelText } from '@testing-library/dom';
+import { fireEvent } from '@testing-library/dom';
 
 // Mock axios
 jest.mock('axios', () => ({
@@ -210,6 +210,7 @@ describe('Frontend Application Tests', () => {
 
             // Wait for promises to resolve
             await Promise.resolve(process.nextTick);
+            await Promise.resolve(); // add extra tick to ensure DOM updates
 
             expect(axios.get).toHaveBeenCalledWith('http://localhost:3000/protected', {
                 headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${localStorage.getItem('token')}` },

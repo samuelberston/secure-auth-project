@@ -29,7 +29,7 @@ app.use('/users', UsersRouter);
 let testUsername = `testuser${Math.floor(Math.random() * 100)}`;
 
 describe('POST /users', () => {
-    beforeEach(() => {
+    beforeAll(() => {
         // reset the test username
         testUsername = `testuser${Math.floor(Math.random() * 100)}`;
     });
