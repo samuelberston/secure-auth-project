@@ -54,7 +54,7 @@ UsersRouter.post(
         console.log("POST /users");
         const result = validationResult(req);
         if (!result.isEmpty()) {
-            res.status(403).json({ message: "Username/password do not meet requirements" });
+            return res.status(403).json({ message: "Username/password do not meet requirements" });
         }
 
         const { username, password } = req.body;
