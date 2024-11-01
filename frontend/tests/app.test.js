@@ -216,11 +216,7 @@ describe('Frontend Application Tests', () => {
                 headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${localStorage.getItem('token')}` },
                 withCredentials: true
             });
-
-            console.log("axios.get.mock.calls: ", axios.get.mock.calls);
-
-            console.log("Protected data:", document.getElementById('protected-data').innerHTML);
-            
+                        
             // not working
             expect(document.getElementById('protected-data')).toHaveTextContent('This is protected data.');
         });
