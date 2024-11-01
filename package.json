@@ -4,7 +4,7 @@
   "description": "A project to implement secure web authentication using login credentials, session cookies, validation, jwt, and other security mechanisms\"",
   "main": "index.js",
   "scripts": {
-    "test": "npx jest"
+    "test": "jest --coverage --detectOpenHandles"
   },
   "author": "",
   "license": "ISC",
