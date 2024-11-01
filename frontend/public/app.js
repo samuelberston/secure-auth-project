@@ -18,10 +18,15 @@ async function handleRegistration(event) {
             }
         );
 
-        if (response.status === 201) {
-            console.log("Registration successful");
-        } else {
-            throw new Error("Failed to register user");
+        if (response.status === 201) {                                  // Registered user
+            console.log(`200 - Registered user with username ${username}.`);
+            alert(`Registered user with username ${username}.`);
+        } else if (response.status === 403) {                           // Invalid credentials
+            console.log('403 - Credentials do not meet requirements.');
+            alert('Credentials do not meet requirements. [Include requirements]')
+        } else if (response === 409) {                                  // User already exists
+            console.log('409 - Attempt to register duplicate user');
+            alert('Please choose a different username.');
         }
     } catch (err) {
         console.error(err);
