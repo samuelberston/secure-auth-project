@@ -140,6 +140,7 @@ async function accessProtected() {
         }
     } catch (err) {
         console.error(err);
+        alert('Failed to retrieve protected data');
     }
 }
 
@@ -150,6 +151,7 @@ async function init() {
         const response = await axios.get('/api/init-session', { withCredentials: true });
     } catch (err) {
         console.error(err);
+        alert('Please reload page: Unable to initialize session.');
     }
 
     // Event listeners
