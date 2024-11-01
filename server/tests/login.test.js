@@ -15,15 +15,35 @@ const ProtectedRouter = require('../routes/protectedRouter.js');
 // Create an Express app instance
 const app = express();
 
+// custom memory store for testing
+class CustomMemoryStore extends session.MemoryStore {
+    close() {
+        clearInterval(this.interval);
+    }
+}
+const store = new CustomMemoryStore();
+
 // Use middleware
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: true, cookie: { secure: false, sameSite: "Lax" } }));
+app.use(session({ 
+    secret: process.env.SESSION_SECRET, 
+    resave: false, 
+    saveUninitialized: true, 
+    cookie: { secure: false, sameSite: "Lax" },
+    store: store
+}));
+
 
 // Use your routers
 app.use('/login', LoginRouter);
 app.use('/users', UsersRouter);
 app.use('/protected', ProtectedRouter);
+
+// After all tests, close the session store to clear the interval
+afterAll(() => {
+    store.close();
+});
 
 // Test the login route
 describe('POST /login', () => {
