@@ -20,7 +20,7 @@ function authenticateToken(req, res, next) {
 }
 
 ProtectedRouter.get('/', authenticateToken, (req, res) => {
-    res.json({ data: 'This is protected data.', user: req.user });
+    res.status(200).json({ data: 'This is protected data.', user: req.user });
 });
 
 module.exports = ProtectedRouter;
