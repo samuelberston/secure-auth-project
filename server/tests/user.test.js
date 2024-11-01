@@ -26,7 +26,7 @@ app.use(session({
 // Use your routers
 app.use('/users', UsersRouter);
 
-const testUsername = `testuser${Math.floor(Math.random() * 100)}`;
+const testUsername = `testyuser${Math.floor(Math.random() * 100)}`;
 
 describe('POST /users', () => {
     it('should create a new user with valid credentials', async () => {
