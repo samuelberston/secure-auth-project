@@ -124,14 +124,19 @@ async function accessProtected() {
         });
 
         if (response.status === 200) {
+            console.log('200 - Received protected data from server.');
             const { data } = response.data;
 
-            // sanitize the data before insertin into DOM
+            // Sanitize data before inserting into DOM to prevent XSS.
             const sanitizedData = DOMPurify.sanitize(JSON.stringify(data, null, 2))
             document.getElementById('fetch-protected').style.display = 'none';
             document.getElementById('protected-data').innerHTML = sanitizedData;
-        } else {
-            throw new Error(response);
+        } else if (response.status === 401) { 
+            console.warn('401 - Unauthorized attempt to view protected data.');
+            alert('You must login to access protected data.');
+        } else if (response.status === 403) {
+            console.warn('403 - Attempt to access protected data with expired token.');
+            alert('Token invalid/expired. Please logout and login again.');
         }
     } catch (err) {
         console.error(err);
