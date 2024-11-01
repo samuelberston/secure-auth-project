@@ -144,3 +144,10 @@ async function init() {
 
 // Run initialization on DOMContentLoaded
 window.addEventListener('DOMContentLoaded', init);
+
+module.exports = {
+    handleRegistration,
+    handleLogin,
+    handleLogout,
+    accessProtected
+};
