@@ -19,12 +19,22 @@ async function handleRegistration(event) {
         );
 
         if (response.status === 201) {                                  // Registered user
+            // reset input fields
+            document.getElementById('register-username').value = '';
+            document.getElementById('register-password').value = '';
+            
             console.log(`200 - Registered user with username ${username}.`);
             alert(`Registered user with username ${username}.`);
         } else if (response.status === 403) {                           // Invalid credentials
+            document.getElementById('register-username').value = '';
+            document.getElementById('register-password').value = '';  
+
             console.log('403 - Credentials do not meet requirements.');
             alert('Credentials do not meet requirements. [Include requirements]')
         } else if (response === 409) {                                  // User already exists
+            document.getElementById('register-username').value = '';
+            document.getElementById('register-password').value = '';    
+
             console.log('409 - Attempt to register duplicate user');
             alert('Please choose a different username.');
         }
@@ -58,7 +68,7 @@ async function handleLogin(event) {
             // Store token in localStorage
             localStorage.setItem('token', token);
 
-            // reset input fiels
+            // reset input fields
             document.getElementById('login-username').value = '';
             document.getElementById('login-password').value = '';
 
