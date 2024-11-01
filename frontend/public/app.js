@@ -59,9 +59,10 @@ async function handleLogin(event) {
             localStorage.setItem('token', token);
 
             // Update UI
+            document.getElementById('register-form').style.display = 'none';
             document.getElementById('login-form').style.display = 'none';
-            // document.getElementById('protected-section').style.display = 'block';
-            // document.getElementById('logout-button').style.display = 'block';
+            document.getElementById('protected-content').style.display = 'block';
+            document.getElementById('logout-button').style.display = 'block';
             alert('Login successful!');
         } else if (response.status === 401) {
             console.warn('UNAUTHORIZED LOGIN ATTEMPT!');   // Unauthorized login attempt

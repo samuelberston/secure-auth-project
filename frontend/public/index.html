@@ -6,8 +6,8 @@
 </head>
 <body>
     <!-- Registration form -->
-    <h1>Register User</h1>
-    <form id="register-form">
+    <form id="register-form" style="display: block;">
+        <h1>Register User</h1>
         <label for="register-username">Username:</label><br>
         <input type="text" name="username" id="register-username" required><br><br>
 
@@ -19,7 +19,7 @@
 
 
     <!-- Login Form -->
-    <form id="login-form">
+    <form id="login-form" style="display: block;">
         <h1>Login</h1>
         <label for="login-username">Username:</label><br>
         <input type="text" name="username" id="login-username" required><br><br>
@@ -31,14 +31,14 @@
     </form>
 
     <!-- Protected Content -->
-    <div id="protected-content">
+    <div id="protected-content" style="display: none;">
         <h2>Protected Data</h2>
         <button id="fetch-protected">Fetch Protected Data</button>
         <pre id="protected-data"></pre>
     </div>
 
     <!-- Logout Button -->
-    <button id="logout-button">Logout</button>
+    <button id="logout-button" style="display: none;">Logout</button>
 
     <!-- axios dependency-->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
