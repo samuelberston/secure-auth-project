@@ -69,6 +69,64 @@ describe('Frontend Application Tests', () => {
         document.body.innerHTML = '';
     });
 
+    describe('Registration functionality', () => {
+        it('should register a user with valid credentials', async () => {
+            // Mock successful registration response
+            axios.post.mockResolvedValue({ status: 201, message: 'Created new user' });
+
+            // Simulate user input and form submission
+            const usernameInput = document.getElementById('register-username');
+            const passwordInput = document.getElementById('register-password');
+
+            // generate a random username
+            const testUsername = `testuser${Math.floor(Math.random() * 100)}`;
+
+            // Simulate user input and submit
+            fireEvent.change(usernameInput, { target: { value: testUsername } });
+            fireEvent.change(passwordInput, { target: { value: 'Password123!' } });
+            fireEvent.submit(document.getElementById('register-form'));
+
+            // Wait for promises to resolve
+            await Promise.resolve(process.nextTick);
+
+            // Assertions
+            expect(axios.post).toHaveBeenCalledWith('http://localhost:3000/users',
+                { username: testUsername, password: 'Password123!' },
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                    withCredentials: true
+                }
+            );
+        });
+
+        it('should fail to register a user with invalid credentials', async () => {
+            // Mock failed registration response
+            axios.post.mockRejectedValue({ status: 403 });
+
+            // Simulate user input and submit
+            const usernameInput = document.getElementById('register-username');
+            const passwordInput = document.getElementById('register-password'); 
+
+            fireEvent.change(usernameInput, { target: { value: '1invaliduser1_$' } });
+            fireEvent.change(passwordInput, { target: { value: 'invalid' } });
+            fireEvent.submit(document.getElementById('register-form'));
+
+            // Wait for promises to resolve
+            await Promise.resolve(process.nextTick);
+
+            expect(axios.post).toHaveBeenCalledWith('http://localhost:3000/users',
+                { username: '1invaliduser1_$', password: 'invalid' },
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                    withCredentials: true
+                }
+            );
+        });
+    });
+
+
+
+
     describe('Login functionality', () => {
         it('should authenticate a user with valid credentials', async () => {
             // Mock successful login response
