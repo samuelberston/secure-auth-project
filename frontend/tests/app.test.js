@@ -12,14 +12,13 @@ import axios from 'axios';
 import app from '../public/app.js';
 const { handleLogin } = app;
 
-describe('Handle login', () => {
+describe('Login functionality', () => {
     beforeEach(() => {
+        // Clear localStorage at the start of each test
+        localStorage.clear();
+        
         // Reset the mock before each test
         axios.post.mockReset();
-        axios.post.mockResolvedValue({
-            status: 200,
-            data: { token: 'test-jwt-token' }
-        });
 
         // Set up DOM elements
         document.body.innerHTML = `
@@ -51,25 +50,16 @@ describe('Handle login', () => {
             data: { token: 'test-jwt-token' }
         });
 
-        // Add debug logging
-        console.log('axios.post', axios.post);
-
         // Simulate user input and form submission
         const usernameInput = getByLabelText(document.body, 'Username:');
         const passwordInput = getByLabelText(document.body, 'Password:');
 
         fireEvent.change(usernameInput, { target: { value: 'flarbene' } });
         fireEvent.change(passwordInput, { target: { value: 'Flarbene123!' } });
-        fireEvent.submit(document.getElementById('login-form'));
-
-        console.log('Form element:', document.getElementById('login-form'));  // Verify form exists
-    
+        fireEvent.submit(document.getElementById('login-form'));    
 
         // Wait for promises to resolve
-        await Promise.resolve(process.nextTick);
-
-        console.log('Axios calls:', axios.post.mock.calls);  // Check mock calls
-     
+        await Promise.resolve(process.nextTick);     
       
         expect(axios.post).toHaveBeenCalledWith('http://localhost:3000/login',
             { username: 'flarbene', password: 'Flarbene123!' },
@@ -80,5 +70,30 @@ describe('Handle login', () => {
         );
       
         expect(localStorage.getItem('token')).toBe('test-jwt-token');
+    });
+
+    it('should handle login failure', async () => {
+        // Mock failed login response
+        axios.post.mockRejectedValue({ status: 401 });
+
+        // Simulate user input and form submission
+        const usernameInput = getByLabelText(document.body, 'Username:');
+        const passwordInput = getByLabelText(document.body, 'Password:');
+
+        fireEvent.change(usernameInput, { target: { value: 'fakeuser' } });
+        fireEvent.change(passwordInput, { target: { value: 'invalidpassword!' } });
+        fireEvent.submit(document.getElementById('login-form'));
+
+        // Wait for promises to resolve
+        await Promise.resolve(process.nextTick);
+
+        expect(axios.post).toHaveBeenCalledWith('http://localhost:3000/login', 
+            { username: 'fakeuser', password: 'invalidpassword!' },
+            {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true
+            }
+        );
+        expect(localStorage.getItem('token')).toBeNull();
     });
 });
