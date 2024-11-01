@@ -1,4 +1,4 @@
-// backend/tests/login.test.js
+// server/tests/login.test.js
 const request = require('supertest');
 const express = require('express');
 const session = require('express-session');

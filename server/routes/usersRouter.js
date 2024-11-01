@@ -60,19 +60,30 @@ UsersRouter.post(
         const { username, password } = req.body;
 
         try {
+          // check if user already exists
+          const userQuery = `SELECT EXISTS(SELECT 1 FROM users WHERE username = $1);`;
+          const userRes = await pool.query(userQuery, [username]);
+
+          if (userRes.rows[0].exists) {
+              console.log("User already exists");
+              // consider adding sleep to prevent sidechannel attacks
+              return res.status(409).json({ message: "Error creating user"} );
+          }
+
           const { salt, hash } = await hashPassword(password);
           const user_uuid = uuidv4();
           
           const query = `INSERT INTO users (user_uuid, username, password_hash, salt) VALUES ($1, $2, $3, $4) RETURNING user_uuid`;
           const values = [user_uuid, username, hash, salt];
         
-          const userUuid = await pool.query(query, values);
-          console.log('User created with ID:', userUuid);
+          const result = await pool.query(query, values);
+
+          console.log('User created with ID:', result.rows[0].user_uuid);
           res.status(201).json({ message: "Created new user" });
 
         } catch (err) {
           console.error('Error creating user:', err);
-          res.status(500).json({ message: "Failed to create user" });
+          return next(err);
         }
     }
 );
