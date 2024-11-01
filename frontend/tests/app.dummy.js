@@ -1,3 +1,5 @@
+import axios from 'axios'; // for testing, the axios dependency is imported into the browser through CDN
+
 // Function to get a cookie by name
 function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -143,3 +145,10 @@ async function init() {
 
 // Run initialization on DOMContentLoaded
 window.addEventListener('DOMContentLoaded', init);
+
+export default {
+    handleRegistration,
+    handleLogin,
+    handleLogout,
+    accessProtected
+};

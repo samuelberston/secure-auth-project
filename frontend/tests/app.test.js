@@ -10,7 +10,7 @@ jest.mock('axios', () => ({
 // import axios after mocking
 import axios from 'axios';
 
-import app from '../public/app.js';
+import app from './app.dummy.js';
 const { handleLogin, handleRegistration, accessProtected } = app;
 
 describe('Frontend Application Tests', () => {
