@@ -34,11 +34,6 @@ describe('POST /users', () => {
         testUsername = `testuser${Math.floor(Math.random() * 100)}`;
     });
 
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
-
-
     it('should create a new user with valid credentials', async () => {
         const response = await request(app)
             .post('/users')
