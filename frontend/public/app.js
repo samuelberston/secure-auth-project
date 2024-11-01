@@ -14,7 +14,7 @@ async function handleRegistration(event) {
     const username = document.getElementById('register-username').value;
     const password = document.getElementById('register-password').value;
 
-    console.log('POST /api/users');
+    console.log('POST /users');
 
     try {
         const response = await axios.post('http://localhost:3000/users',
