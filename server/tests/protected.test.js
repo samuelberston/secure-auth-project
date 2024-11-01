@@ -47,4 +47,10 @@ describe('GET /protected', () => {
         expect(response.body.data).toBe('This is protected data.');
         expect(response.body.user).toBeDefined();
     });
+
+    // test protected route without token
+    it('should not access protected route without token', async () => {
+        const response = await request(app).get('/protected');
+        expect(response.statusCode).toBe(401);
+    });
 });
