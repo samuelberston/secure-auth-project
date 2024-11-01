@@ -34,7 +34,7 @@ app.use(cookieParser());
 
 // Enable requests from client
 app.use(cors({
-    origin: 'http://localhost:8081', // Your client server's origin
+    origin: 'http://localhost:8081', // development client server's origin
     methods: ["GET", "PUT", "POST", "DELETE"],
     allowedHeaders: ["Authorization", "Origin", "X-Requested-With", "Content-Type", "Accept", "data", "body", "X-XSRF-TOKEN"],
     credentials: true, // Allow cookies to be sent and received
@@ -54,13 +54,13 @@ app.use(session({
 }));
 
 // debugging
-app.use((req, res, next) => {
-    console.log('Session ID:', req.session.id);
-    console.log('Session:', req.session);
-    next();
-});
+// app.use((req, res, next) => {
+//     console.log('Session ID:', req.session.id);
+//     console.log('Session:', req.session);
+//     next();
+// });
 
-// Route to initialize session and CSRF token - notice CSRF middleware not used here
+// Route to initialize session
 app.get('/init-session', (req, res) => {
     res.sendStatus(200); // Respond with OK status
 });

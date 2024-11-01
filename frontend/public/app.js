@@ -80,7 +80,6 @@ function handleLogout() {
 
 // access protected
 async function accessProtected() {
-    console.log("accessProtected");
     const token = localStorage.getItem('token');
 
     if (!token) {
