@@ -51,7 +51,7 @@ LoginRouter.post(
         const result = validationResult(req);       
         if (!result.isEmpty()) {
             // add sleep
-            return res.status(403).send({ message: "Invalid username/password" });
+            return res.status(401).send({ message: "Invalid credentials" });
         }
 
         const { username, password } = req.body;
@@ -65,7 +65,7 @@ LoginRouter.post(
             if (!userRes.rows[0].exists) {
                 console.log("User does not exist");
                 // consider adding sleep to prevent sidechannel attacks
-                res.send(403).json({ message: "Invalid credentials"} );
+                res.send(401).json({ message: "Invalid credentials"} );
             }
     
             // check password
