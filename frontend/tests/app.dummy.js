@@ -49,7 +49,8 @@ async function handleLogin(event) {
             }
         );
 
-        if (response.status === 200) { 
+        if (response.status === 200) {
+            // retrieve JWT from HTTP response 
             const token = response.data.token;
 
             // Store token in localStorage
@@ -60,9 +61,12 @@ async function handleLogin(event) {
             // document.getElementById('protected-section').style.display = 'block';
             // document.getElementById('logout-button').style.display = 'block';
             alert('Login successful!');
-        } else {
-            console.log('Login failed');
+        } else if (response.status === 401) {
+            console.warn('UNAUTHORIZED LOGIN ATTEMPT!');
             alert('Login failed. Please check your credentials.');
+        } else if (response.status === 500) {
+            console.error('Login failed with 500.');
+            alert('Login failed due to server-side issue.');
         }
     } catch (err) {
         console.error(err);
