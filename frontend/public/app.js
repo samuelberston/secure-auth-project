@@ -1,4 +1,4 @@
-
+import axios from 'axios';
 
 // Function to get a cookie by name
 function getCookie(name) {
@@ -145,7 +145,7 @@ async function init() {
 // Run initialization on DOMContentLoaded
 window.addEventListener('DOMContentLoaded', init);
 
-module.exports = {
+export default {
     handleRegistration,
     handleLogin,
     handleLogout,

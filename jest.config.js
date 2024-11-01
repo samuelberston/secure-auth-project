@@ -22,7 +22,8 @@ module.exports = {
           "babel-jest": {
             useESM: true
           }
-        }
+        },
+        setupFilesAfterEnv: ["<rootDir>/jest.setup.js"] // Add this line
       }
     ]
   };
