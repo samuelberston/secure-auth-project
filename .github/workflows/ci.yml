@@ -1,0 +1,51 @@
+# .github/workflows/ci.yml
+
+name: CI Pipeline
+
+# Trigger the workflow on push and pull request events to the main branch
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x]  # Specify Node.js versions you want to test against
+
+    steps:
+      # 1. Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # 2. Set up Node.js environment
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'  # Caches npm dependencies automatically
+
+      # 3. Install dependencies
+      - name: Install Dependencies
+        run: npm install
+
+      # 4. Run ESLint with Security Plugin
+      - name: Run ESLint
+        run: npm run lint
+        continue-on-error: true
+
+      # 5. Run Test Suite
+      - name: Run Tests
+        run: npm test
+        continue-on-error: true
+
+      # 6. Run npm audit
+      - name: Run npm audit
+        run: npm audit --production
+        continue-on-error: true
