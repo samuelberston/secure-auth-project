@@ -26,12 +26,12 @@ app.use(session({
 // Use your routers
 app.use('/users', UsersRouter);
 
-let testUsername = `testuser${Math.floor(Math.random() * 100)}`;
+let testUsername = `testuser${Math.floor(Math.random() * 1000)}`;
 
 describe('POST /users', () => {
     beforeAll(() => {
         // reset the test username
-        testUsername = `testuser${Math.floor(Math.random() * 100)}`;
+        testUsername = `testuser${Math.floor(Math.random() * 1000)}`;
     });
 
     it('should create a new user with valid credentials', async () => {
