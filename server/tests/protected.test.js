@@ -53,4 +53,11 @@ describe('GET /protected', () => {
         const response = await request(app).get('/protected');
         expect(response.statusCode).toBe(401);
     });
+
+    // test protected route with invalid token
+    it('should not access protected route with invalid token', async () => {
+        const response = await request(app).get('/protected').set('Authorization', 'Bearer invalidtoken');
+        expect(response.statusCode).toBe(403);
+        expect(response.body.message).toBe('Token invalid or expired.');
+    });
 });
