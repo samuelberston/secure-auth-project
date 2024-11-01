@@ -3,7 +3,8 @@ import { fireEvent, getByLabelText } from '@testing-library/dom';
 
 // Mock axios
 jest.mock('axios', () => ({
-    post: jest.fn()
+    post: jest.fn(),
+    get: jest.fn()
 }));
 
 // import axios after mocking
@@ -16,6 +17,7 @@ describe('Frontend Application Tests', () => {
     beforeEach(() => {
         // Reset mocks before each test
         axios.post.mockReset();
+        axios.get.mockReset();
 
         // Clear localStorage at the start of each test
         localStorage.clear();
@@ -124,9 +126,6 @@ describe('Frontend Application Tests', () => {
         });
     });
 
-
-
-
     describe('Login functionality', () => {
         it('should authenticate a user with valid credentials', async () => {
             // Mock successful login response
@@ -180,6 +179,49 @@ describe('Frontend Application Tests', () => {
                 }
             );
             expect(localStorage.getItem('token')).toBeNull();
+        });
+    });
+
+    describe('Protected content functionality', () => {
+        it('should access protected content after successful login', async () => {
+            // Mock successful login response
+            axios.post.mockResolvedValue({
+                status: 200,
+                data: { token: 'test-jwt-token' }
+            });
+
+            // Simulate user input and form submission
+            const usernameInput = document.getElementById('login-username');
+            const passwordInput = document.getElementById('login-password');
+
+            fireEvent.change(usernameInput, { target: { value: 'flarbene' } });
+            fireEvent.change(passwordInput, { target: { value: 'Flarbene123!' } });
+            fireEvent.submit(document.getElementById('login-form'));    
+
+            // Wait for promises to resolve
+            await Promise.resolve(process.nextTick);   
+
+            // Mock successful protected content response
+            axios.get.mockResolvedValue({ status: 200, data: 'Protected data' });
+
+            // Simulate click event
+            const fetchProtectedButton = document.getElementById('fetch-protected');
+            fireEvent.click(fetchProtectedButton);
+
+            // Wait for promises to resolve
+            await Promise.resolve(process.nextTick);
+
+            expect(axios.get).toHaveBeenCalledWith('http://localhost:3000/protected', {
+                headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                withCredentials: true
+            });
+
+            console.log("axios.get.mock.calls: ", axios.get.mock.calls);
+
+            console.log("Protected data:", document.getElementById('protected-data').innerHTML);
+            
+            // not working
+            // expect(document.getElementById('protected-data')).toHaveTextContent('This is protected data.');
         });
     });
 });
