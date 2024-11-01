@@ -58,11 +58,17 @@ async function handleLogin(event) {
             // Store token in localStorage
             localStorage.setItem('token', token);
 
-            // Update UI
+            // reset input fiels
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+
+            // Update UI elements visibility
             document.getElementById('register-form').style.display = 'none';
             document.getElementById('login-form').style.display = 'none';
             document.getElementById('protected-content').style.display = 'block';
             document.getElementById('logout-button').style.display = 'block';
+
+
             alert('Login successful!');
         } else if (response.status === 401) {
             console.warn('UNAUTHORIZED LOGIN ATTEMPT!');   // Unauthorized login attempt
@@ -79,10 +85,11 @@ async function handleLogin(event) {
 
 // handle logout
 function handleLogout() {
-    localStorage.removeItem('token');
+    localStorage.removeItem('token'); // NOT WORKING!
     // Update UI accordingly
+    document.getElementById('register-form').style.display = 'block';
     document.getElementById('login-form').style.display = 'block';
-    document.getElementById('protected-section').style.display = 'none';
+    document.getElementById('protected-content').style.display = 'none';
     document.getElementById('logout-button').style.display = 'none';
     document.getElementById('protected-data').textContent = '';
     alert('Logged out successfully.');
@@ -133,13 +140,14 @@ async function init() {
     document.getElementById('register-form').addEventListener('submit', handleRegistration);
     document.getElementById('login-form').addEventListener('submit', handleLogin);
     document.getElementById('fetch-protected').addEventListener('click', accessProtected);
+    document.getElementById('logout-button').addEventListener('click', handleLogout);
 
     // Check if token exists on page load
     const token = localStorage.getItem('token');
     if (token) {
-        // document.getElementById('login-form').style.display = 'none';
-        // document.getElementById('protected-content').style.display = 'block';
-        // document.getElementById('logout-button').style.display = 'block';
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('protected-content').style.display = 'block';
+        document.getElementById('logout-button').style.display = 'block';
     }
 }
 
