@@ -51,7 +51,7 @@ async function handleLogin(event) {
             }
         );
 
-        if (response.status === 200) {
+        if (response.status === 200) {                      // Successful login
             // retrieve JWT from HTTP response 
             const token = response.data.token;
 
@@ -59,20 +59,20 @@ async function handleLogin(event) {
             localStorage.setItem('token', token);
 
             // Update UI
-            // document.getElementById('login-form').style.display = 'none';
+            document.getElementById('login-form').style.display = 'none';
             // document.getElementById('protected-section').style.display = 'block';
             // document.getElementById('logout-button').style.display = 'block';
             alert('Login successful!');
         } else if (response.status === 401) {
-            console.warn('UNAUTHORIZED LOGIN ATTEMPT!');
+            console.warn('UNAUTHORIZED LOGIN ATTEMPT!');   // Unauthorized login attempt
             alert('Login failed. Please check your credentials.');
-        } else if (response.status === 500) {
+        } else if (response.status === 500) {              // Server-side error during login
             console.error('Login failed with 500.');
-            alert('Login failed due to server-side issue.');
+            alert('Login failed due to a server-side error.');
         }
     } catch (err) {
         console.error(err);
-        alert('Login failed. Please check your credentials.');
+        alert('Login failed.');
     }
 }
 
