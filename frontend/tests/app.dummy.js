@@ -1,13 +1,6 @@
 import axios from 'axios'; // for testing, the axios dependency is imported into the browser through CDN
 import DOMPurify from 'dompurify';
 
-// Function to get a cookie by name
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-}
-
 // handle registration
 async function handleRegistration(event) {
     event.preventDefault();
@@ -110,7 +103,7 @@ async function accessProtected() {
 
         if (response.status === 200) {
             const { data } = response.data;
-            
+
             // sanitize the data before insertin into DOM
             const sanitizedData = DOMPurify.sanitize(JSON.stringify(data, null, 2));
             document.getElementById('protected-data').innerHTML = sanitizedData;
