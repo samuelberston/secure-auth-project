@@ -76,8 +76,8 @@ async function handleLogin(event) {
             document.getElementById('register-form').style.display = 'none';
             document.getElementById('login-form').style.display = 'none';
             document.getElementById('protected-content').style.display = 'block';
+            document.getElementById('fetch-protected').style.display = 'block';
             document.getElementById('logout-button').style.display = 'block';
-
 
             alert('Login successful!');
         } else if (response.status === 401) {
@@ -149,6 +149,7 @@ async function init() {
     // initialize session and get CSRF token
     try {
         const response = await axios.get('/api/init-session', { withCredentials: true });
+        console.log('Initialized session with id: ', response);
     } catch (err) {
         console.error(err);
         alert('Please reload page: Unable to initialize session.');
