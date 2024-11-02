@@ -22,24 +22,54 @@ async function handleRegistration(event) {
             // reset input fields
             document.getElementById('register-username').value = '';
             document.getElementById('register-password').value = '';
+            document.getElementById('register-response').textContent = JSON.stringify(response.data.message, null, 2);
             
             console.log(`200 - Registered user with username ${username}.`);
             alert(`Registered user with username ${username}.`);
-        } else if (response.status === 403) {                           // Invalid credentials
-            document.getElementById('register-username').value = '';
-            document.getElementById('register-password').value = '';  
+        } 
+        // else if (response.status === 400) {                           // Invalid credentials
+        //     document.getElementById('register-username').value = '';
+        //     document.getElementById('register-password').value = '';  
+        //     document.getElementById('register-response').textContent = JSON.stringify(response.data.message, null, 2);
 
-            console.log('403 - Credentials do not meet requirements.');
-            alert('Credentials do not meet requirements. [Include requirements]')
-        } else if (response === 409) {                                  // User already exists
-            document.getElementById('register-username').value = '';
-            document.getElementById('register-password').value = '';    
+        //     console.log('400 - Credentials do not meet requirements.');
+        //     alert('Credentials do not meet requirements. [Include requirements]')
+        // } else if (response.status === 409) {                                  // User already exists
+        //     document.getElementById('register-username').value = '';
+        //     document.getElementById('register-password').value = '';    
 
-            console.log('409 - Attempt to register duplicate user');
-            alert('Please choose a different username.');
-        }
+        //     console.log('409 - Attempt to register duplicate user');
+        //     alert('Please choose a different username.');
+        // }
     } catch (err) {
-        console.error(err);
+        if (err.response) {
+            console.log('err.response: ', err.response);
+            switch (err.response.status) {
+                case 400:
+                console.error(err);
+                document.getElementById('register-username').value = '';
+                document.getElementById('register-password').value = '';  
+                document.getElementById('register-response').textContent = JSON.stringify(err.response.data.message, null, 2);
+    
+                console.log('400 - Credentials do not meet requirements.');
+                alert('Credentials do not meet requirements. [Include requirements]')
+                break;
+            case 409:
+                console.error(err);
+                document.getElementById('register-username').value = '';
+                document.getElementById('register-password').value = '';  
+                document.getElementById('register-response').textContent = JSON.stringify(err.response.data.message, null, 2);
+                console.log('409 - Attempt to register duplicate user');
+                alert('Please choose a different username.');
+                break;
+            default:
+                console.error(err);
+                alert('Registration failed. Please check your credentials.');
+            }
+        } else {
+            console.error(err);
+            alert('Registration failed. Please check your credentials.');
+        }
     }
 }
 
