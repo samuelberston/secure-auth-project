@@ -54,7 +54,7 @@ UsersRouter.post(
         console.log("POST /users");
         const result = validationResult(req);
         if (!result.isEmpty()) {
-            return res.status(403).json({ message: "Username/password do not meet requirements" });
+            return res.status(400).json({ message: "Username/password do not meet requirements." });
         }
 
         const { username, password } = req.body;
@@ -79,7 +79,7 @@ UsersRouter.post(
           const result = await pool.query(query, values);
 
           console.log('User created with ID:', result.rows[0].user_uuid);
-          return res.status(201).json({ message: "Created new user" });
+          return res.status(201).json({ message: "Successfully created user" });
 
         } catch (err) {
           console.error('Error creating user:', err);
