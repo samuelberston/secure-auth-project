@@ -61,7 +61,7 @@ LoginRouter.post(
             console.log("username: ", userRes);
             if (!userRes.rows[0].exists) {
                 console.log(`User ${username} does not exist`);
-                res.send(401).json({ message: "Invalid credentials"} );
+                return res.status(401).json({ message: "Invalid credentials"} );
             }
     
             // check password
@@ -87,18 +87,18 @@ LoginRouter.post(
                     }
 
                     console.log("Authentication successful");
-                    res.status(200).json({ 
+                    return res.status(200).json({ 
                         token: req.session.token,
                         message: "Authentication successful" 
                     });
                 } else {
                     console.log("Authentication failed - Invalid credentials");
-                    res.status(401).json({ message: "Invalid credentials" });
+                    return res.status(401).json({ message: "Invalid credentials" });
                 }
             }
         } catch (err) {
             console.error("Error during authentication: ", err);
-            res.status(500).json({ message: "Error processing request" });
+            return res.status(500).json({ message: "Error processing request" });
         }
     }
 );
