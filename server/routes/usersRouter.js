@@ -79,7 +79,7 @@ UsersRouter.post(
           const result = await pool.query(query, values);
 
           console.log('User created with ID:', result.rows[0].user_uuid);
-          return res.status(201).json({ message: "Successfully created user" });
+          return res.status(201).json({ message: "User registered successfully." });
 
         } catch (err) {
           console.error('Error creating user:', err);
