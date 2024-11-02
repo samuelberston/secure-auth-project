@@ -110,16 +110,39 @@ async function handleLogin(event) {
             document.getElementById('logout-button').style.display = 'block';
 
             alert('Login successful!');
-        } else if (response.status === 401) {
-            console.warn('UNAUTHORIZED LOGIN ATTEMPT!');   // Unauthorized login attempt
-            alert('Login failed. Please check your credentials.');
-        } else if (response.status === 500) {              // Server-side error during login
-            console.error('Login failed with 500.');
-            alert('Login failed due to a server-side error.');
-        }
+        } 
+        // else if (response.status === 401) {
+        //     console.warn('UNAUTHORIZED LOGIN ATTEMPT!');   // Unauthorized login attempt
+        //     alert('Login failed. Please check your credentials.');
+        // } else if (response.status === 500) {              // Server-side error during login
+        //     console.error('Login failed with 500.');
+        //     alert('Login failed due to a server-side error.');
+        // }
     } catch (err) {
-        console.error(err);
-        alert('Login failed.');
+        if (err.response) {
+            switch (err.response.status) {
+                case 401:
+                    console.warn('UNAUTHORIZED LOGIN ATTEMPT!');   // Unauthorized login attempt
+                    // reset input fields
+                    document.getElementById('login-username').value = '';
+                    document.getElementById('login-password').value = '';
+                    alert('Login failed. Please check your credentials.');
+                    break;
+                case 500:
+                    console.error('Login failed with 500.');
+                    // reset input fields
+                    document.getElementById('login-username').value = '';
+                    document.getElementById('login-password').value = '';
+                    alert('Login failed due to a server-side error.');
+                    break;
+                default:
+                    console.error(err);
+                    alert('Login failed.');
+            }
+        } else {
+            console.error(err);
+            alert('Login failed.');
+        }
     }
 }
 
