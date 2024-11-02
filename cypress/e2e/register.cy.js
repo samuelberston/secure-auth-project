@@ -24,4 +24,8 @@ describe('User Registration and Login', () => {
         // Verify protected content is visible
         cy.get('#protected-content').should('be.visible');
     });
+
+    // TODO: Add tests for login failure
+    // TODO: Add tests for logout
+    // TODO: Add tests for accessing protected endpoint
 });
