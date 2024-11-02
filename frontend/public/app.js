@@ -27,20 +27,6 @@ async function handleRegistration(event) {
             console.log(`200 - Registered user with username ${username}.`);
             alert(`Registered user with username ${username}.`);
         } 
-        // else if (response.status === 400) {                           // Invalid credentials
-        //     document.getElementById('register-username').value = '';
-        //     document.getElementById('register-password').value = '';  
-        //     document.getElementById('register-response').textContent = JSON.stringify(response.data.message, null, 2);
-
-        //     console.log('400 - Credentials do not meet requirements.');
-        //     alert('Credentials do not meet requirements. [Include requirements]')
-        // } else if (response.status === 409) {                                  // User already exists
-        //     document.getElementById('register-username').value = '';
-        //     document.getElementById('register-password').value = '';    
-
-        //     console.log('409 - Attempt to register duplicate user');
-        //     alert('Please choose a different username.');
-        // }
     } catch (err) {
         if (err.response) {
             console.log('err.response: ', err.response);
@@ -111,13 +97,6 @@ async function handleLogin(event) {
 
             alert('Login successful!');
         } 
-        // else if (response.status === 401) {
-        //     console.warn('UNAUTHORIZED LOGIN ATTEMPT!');   // Unauthorized login attempt
-        //     alert('Login failed. Please check your credentials.');
-        // } else if (response.status === 500) {              // Server-side error during login
-        //     console.error('Login failed with 500.');
-        //     alert('Login failed due to a server-side error.');
-        // }
     } catch (err) {
         if (err.response) {
             switch (err.response.status) {
