@@ -62,6 +62,7 @@ app.use(session({
 
 // Route to initialize session
 app.get('/init-session', (req, res) => {
+    console.log('Started session with ID: ', req.cookies['connect.sid']);
     res.sendStatus(200); // Respond with OK status
 });
 

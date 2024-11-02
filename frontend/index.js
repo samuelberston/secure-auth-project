@@ -1,6 +1,5 @@
 const express = require('express');
 const path = require('path');
-const axios = require('axios');
 const cookieParser = require('cookie-parser');
 const { createProxyMiddleware }= require('http-proxy-middleware');
 
