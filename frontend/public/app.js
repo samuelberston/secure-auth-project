@@ -1,6 +1,25 @@
 // get advice of the day
 async function getAdviceOfTheDay() {
-    // show loading message
+    // Check cache first
+    try {
+        const cachedAdvice = localStorage.getItem('advice');
+        if (cachedAdvice) {
+            // Check expired
+            const { advice, timestamp } = JSON.parse(cachedAdvice);
+            const now = new Date();
+            const cacheDate = new Date(timestamp);
+            if (now.toDateString() === cacheDate.toDateString()) {
+                document.getElementById('advice-data').textContent = advice;
+                return;
+            }
+        }
+    } catch (err) {
+        // Handle corrupted cache data
+        console.warn('Cache data is corrupted. Clearing advice cache.');
+        localStorage.removeItem('advice');
+    }
+
+    // If no cache or cache expired, fetch new advice
     document.getElementById('advice-loading').style.display = 'block';
     document.getElementById('advice-data').textContent = '';
 
@@ -8,9 +27,15 @@ async function getAdviceOfTheDay() {
         const response = await axios.get('http://localhost:3000/advice');
         const { advice } = response.data;
 
+        // Cache advice
+        const timestamp = new Date().getTime();
+        localStorage.setItem(
+            'advice', 
+            JSON.stringify({ advice, timestamp })
+        );
+
         // update DOM
         document.getElementById('advice-data').textContent = advice;
-        document.getElementById('advice-loading').style.display = 'none';
     } catch (err) {
         if (err.response ) { 
             switch (err.response.status) {
