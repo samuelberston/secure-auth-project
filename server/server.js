@@ -9,6 +9,7 @@ dotenv.config();
 const UsersRouter = require("./routes/usersRouter.js");
 const LoginRouter = require("./routes/loginRouter.js");
 const ProtectedRouter = require("./routes/protectedRouter.js");
+const AdviceRouter = require("./routes/adviceRouter.js");
 
 const app = express();
 
@@ -70,5 +71,6 @@ app.get('/init-session', (req, res) => {
 app.use('/users', UsersRouter);
 app.use('/login', LoginRouter);
 app.use('/protected', ProtectedRouter);
+app.use('/advice', AdviceRouter);
 
 module.exports = app; // export for testing
