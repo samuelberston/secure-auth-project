@@ -1,8 +1,22 @@
 // Advice router
 const AdviceRouter = require("express").Router();
+const rateLimit = require('express-rate-limit');
 
 // PostgreSQL connection
 const pool = require('../psql.js');
+
+// Rate limiting middleware
+const adviceLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // Limit each IP to 10 requests per windowMs
+    message: {
+        message: 'Too many requests from this IP, please try again later'
+    },
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+AdviceRouter.use(adviceLimiter);
 
 /**
  * @route GET /advice
