@@ -24,6 +24,7 @@
     "http-proxy-middleware": "^3.0.3",
     "jest-environment-jsdom": "^29.7.0",
     "jsonwebtoken": "^9.0.2",
+    "node-cache": "^5.1.2",
     "pg": "^8.13.0",
     "postgresql": "^0.0.1",
     "uuid": "^10.0.0"
