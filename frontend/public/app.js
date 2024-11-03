@@ -1,3 +1,35 @@
+// get advice of the day
+async function getAdviceOfTheDay() {
+    // show loading message
+    document.getElementById('advice-loading').style.display = 'block';
+    document.getElementById('advice-data').textContent = '';
+
+    try {
+        const response = await axios.get('http://localhost:3000/advice');
+        const { advice } = response.data;
+
+        // update DOM
+        document.getElementById('advice-data').textContent = advice;
+        document.getElementById('advice-loading').style.display = 'none';
+    } catch (err) {
+        if (err.response ) { 
+            switch (err.response.status) {
+                case 404:
+                    document.getElementById('advice-data').textContent = 'No advice found for today.';
+                    break;
+                default:
+                    document.getElementById('advice-data').textContent = 'Failed to load advice. Please try again later.';
+            }
+        } else {
+            document.getElementById('advice-data').textContent = 'Network error. Please check your connection.';
+        }
+        console.error('Error fetching advice:', err);
+    } finally {
+        // Always hide loading indicator
+        document.getElementById('advice-loading').style.display = 'none';
+    }
+}
+
 // handle registration
 async function handleRegistration(event) {
     event.preventDefault();
@@ -32,26 +64,26 @@ async function handleRegistration(event) {
             console.log('err.response: ', err.response);
             switch (err.response.status) {
                 case 400:
-                console.error(err);
-                document.getElementById('register-username').value = '';
-                document.getElementById('register-password').value = '';  
-                document.getElementById('register-response').textContent = JSON.stringify(err.response.data.message, null, 2);
-    
-                console.log('400 - Credentials do not meet requirements.');
-                alert('Credentials do not meet requirements. [Include requirements]')
-                break;
-            case 409:
-                console.error(err);
-                document.getElementById('register-username').value = '';
-                document.getElementById('register-password').value = '';  
-                document.getElementById('register-response').textContent = JSON.stringify(err.response.data.message, null, 2);
-                console.log('409 - Attempt to register duplicate user');
-                alert('Please choose a different username.');
-                break;
-            default:
-                console.error(err);
-                alert('Registration failed. Please check your credentials.');
-            }
+                    console.error(err);
+                    document.getElementById('register-username').value = '';
+                    document.getElementById('register-password').value = '';  
+                    document.getElementById('register-response').textContent = JSON.stringify(err.response.data.message, null, 2);
+        
+                    console.log('400 - Credentials do not meet requirements.');
+                    alert('Credentials do not meet requirements. [Include requirements]')
+                    break;
+                case 409:
+                    console.error(err);
+                    document.getElementById('register-username').value = '';
+                    document.getElementById('register-password').value = '';  
+                    document.getElementById('register-response').textContent = JSON.stringify(err.response.data.message, null, 2);
+                    console.log('409 - Attempt to register duplicate user');
+                    alert('Please choose a different username.');
+                    break;
+                default:
+                    console.error(err);
+                    alert('Registration failed. Please check your credentials.');
+                }
         } else {
             console.error(err);
             alert('Registration failed. Please check your credentials.');
@@ -178,7 +210,7 @@ async function accessProtected() {
 
 // init function
 async function init() {
-    // initialize session and get CSRF token
+    // initialize session
     try {
         const response = await axios.get('/api/init-session', { withCredentials: true });
         console.log('Initialized session with id: ', response);
@@ -186,6 +218,9 @@ async function init() {
         console.error(err);
         alert('Please reload page: Unable to initialize session.');
     }
+
+    // get advice of the day
+    await getAdviceOfTheDay();
 
     // Event listeners
     document.getElementById('register-form').addEventListener('submit', handleRegistration);
