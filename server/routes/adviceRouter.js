@@ -1,6 +1,7 @@
 // Advice router
 const AdviceRouter = require("express").Router();
 const rateLimit = require('express-rate-limit');
+const NodeCache = require('node-cache');
 
 // PostgreSQL connection
 const pool = require('../psql.js');
@@ -19,10 +20,7 @@ const adviceLimiter = rateLimit({
 AdviceRouter.use(adviceLimiter);
 
 // Cache object
-const adviceCache = {
-    dayOfWeek: null,
-    advice: null
-};
+const adviceCache = new NodeCache({ stdTTL: 86400 }); // Cache for 24 hours
 
 /**
  * @route GET /advice
@@ -34,15 +32,16 @@ AdviceRouter.get('/', async (req, res) => {
         const dayOfWeek = new Date().toLocaleDateString('en-US', { weekday: 'long' });
 
         // Return cached advice if available
-        if (adviceCache.dayOfWeek === dayOfWeek) {
-            return res.status(200).json(adviceCache);
+        if (adviceCache.get(dayOfWeek)) {
+            return res.status(200).json({ advice: adviceCache.get(dayOfWeek) });
         }
         const advice = await pool.query('SELECT advice FROM advice WHERE day_of_week = $1', [dayOfWeek]);
         if (advice.rows.length === 0) {
             return res.status(404).json({ message: "No advice found for today" });
         }
-        adviceCache.dayOfWeek = dayOfWeek;
-        adviceCache.advice = advice.rows[0].advice;
+        // Cache the advice
+        adviceCache.set(dayOfWeek, advice.rows[0].advice) = dayOfWeek;
+
         return res.status(200).json(advice.rows[0]);
     } catch (err) {
         console.error("Error fetching advice: ", err);
