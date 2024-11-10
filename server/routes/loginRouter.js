@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');                           // Compare password against hash
 const jwt = require('jsonwebtoken');                        // Initiate JWT session
 const { validationResult } = require("express-validator");  // Validate credentials
+const logger = require("../logger.js");
 
 // Validation middleware
 const { usernameValidator, passwordValidator } = require('../validators.js');
@@ -61,6 +62,7 @@ LoginRouter.post(
             console.log("username: ", userRes);
             if (!userRes.rows[0].exists) {
                 console.log(`User ${username} does not exist`);
+                logger.warn(`Failed login attempt with non-existent username %s from IP: %s`, username, req.ip);
                 return res.status(401).json({ message: "Invalid credentials"} );
             }
     
@@ -87,17 +89,20 @@ LoginRouter.post(
                     }
 
                     console.log("Authentication successful");
+                    logger.info(`User %s successfully logged in from IP: %s`, username, req.ip);
                     return res.status(200).json({ 
                         token: req.session.token,
                         message: "Authentication successful" 
                     });
                 } else {
                     console.log("Authentication failed - Invalid credentials");
+                    logger.warn(`Failed login attempt from user %s from IP: %s`, username, req.ip);
                     return res.status(401).json({ message: "Invalid credentials" });
                 }
             }
         } catch (err) {
             console.error("Error during authentication: ", err);
+            logger.error(`Error processing login request for user %s from IP: %s`, username, req.ip);
             return res.status(500).json({ message: "Error processing request" });
         }
     }
