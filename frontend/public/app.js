@@ -56,11 +56,24 @@ async function getAdviceOfTheDay() {
 }
 
 // handle registration
+
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^])[A-Za-z\d@$!%*?&#^]{8,}$/;
+
+function validatePassword(password) {
+  return passwordRegex.test(password);
+}
+
 async function handleRegistration(event) {
     event.preventDefault();
 
     const username = document.getElementById('register-username').value;
     const password = document.getElementById('register-password').value;
+    if (!validatePassword(password)) {
+        alert('Password does not meet the requirements.');
+        document.getElementById('register-username').value = '';
+        document.getElementById('register-password').value = '';
+        return;
+    }
 
     console.log('POST /users');
 
