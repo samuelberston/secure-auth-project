@@ -28,7 +28,8 @@
     "node-cache": "^5.1.2",
     "pg": "^8.13.0",
     "postgresql": "^0.0.1",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
