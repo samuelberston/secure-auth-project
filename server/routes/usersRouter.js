@@ -4,7 +4,7 @@
 
 const { v4: uuidv4 } = require('uuid');                     // Generate user UUID
 const { validationResult } = require('express-validator');  // Validate credentials
-
+const logger = require('../logger.js');
 const pool = require('../psql.js');                         // PostgreSQL connection
 
 const UsersRouter = require('express').Router();
@@ -67,6 +67,7 @@ UsersRouter.post(
           if (userRes.rows[0].exists) {
               console.log(`User ${username} already exists`);
               // consider adding sleep to prevent sidechannel attacks
+              logger.warn(`Attempted duplicate registration attempt for user %s`, username);
               return res.status(409).json({ message: "Error creating user"} );
           }
 
@@ -79,10 +80,12 @@ UsersRouter.post(
           const result = await pool.query(query, values);
 
           console.log('User created with ID:', result.rows[0].user_uuid);
+          logger.info(`Registered user %s from IP: %s`, username, req.ip);
           return res.status(201).json({ message: "User registered successfully." });
 
         } catch (err) {
           console.error('Error creating user:', err);
+          logger.error(`Error while creating user %s from IP: %s. Error: %s`, username, req.ip, err);
           return next(err);
         }
     }
