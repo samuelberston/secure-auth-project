@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const cors = require("cors");
+const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv')
 dotenv.config();
 
@@ -12,6 +13,18 @@ const ProtectedRouter = require("./routes/protectedRouter.js");
 const AdviceRouter = require("./routes/adviceRouter.js");
 
 const app = express();
+
+// Global rate limiter
+app.use(rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: {
+        status: 429,
+        error: 'Too many requests, please try again later.'
+    },
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+}));
 
 // Security middleware
 app.use(helmet({
@@ -63,13 +76,25 @@ app.use(session({
 
 // Route to initialize session
 app.get('/init-session', (req, res) => {
-    console.log('Started session with ID: ', req.cookies['connect.sid']);
+    console.log('Session ID: ', req.cookies['connect.sid']);
     res.sendStatus(200); // Respond with OK status
+});
+
+// route rate limiters
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // Limit each IP to 10 login attempts per windowMs
+    message: {
+        status: 429,
+        error: 'Too many login attempts, please try again later.'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
 });
 
 // routes
 app.use('/users', UsersRouter);
-app.use('/login', LoginRouter);
+app.use('/login', loginLimiter, LoginRouter);
 app.use('/protected', ProtectedRouter);
 app.use('/advice', AdviceRouter);
 
