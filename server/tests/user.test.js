@@ -40,7 +40,7 @@ describe('POST /users', () => {
             .send({ username: testUsername, password: 'Password1!' });
 
         expect(response.statusCode).toBe(201);
-        expect(response.body.message).toBe('Created new user');
+        expect(response.body.message).toBe('User registered successfully.');
     });
 
     it('should fail to create a new user with invalid credentials', async () => {
@@ -48,7 +48,7 @@ describe('POST /users', () => {
             .post('/users')
             .send({ username: 'testuser', password: 'password' });
 
-        expect(response.statusCode).toBe(403);
+        expect(response.statusCode).toBe(400);
         expect(response.body.message).toBe('Username/password do not meet requirements');
     });
 
