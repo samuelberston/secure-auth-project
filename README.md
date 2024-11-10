@@ -14,4 +14,4 @@ The project includes mitigations which address common OWASP security vulnerabili
 
 ## System architecture ##
 
-![System Architecture][docs/auth-server.jpeg]
+![System Architecture](docs/auth-server.jpeg)
