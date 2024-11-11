@@ -14,6 +14,16 @@ const AdviceRouter = require("./routes/adviceRouter.js");
 
 const app = express();
 
+// Root Endpoint
+app.get('/', (req, res) => {
+    res.status(200).json({ message: 'Auth server is up and running.' });
+  });
+  
+// Health Check Endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'UP' });
+})
+
 // Global rate limiter
 app.use(rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -66,13 +76,6 @@ app.use(session({
         sameSite: "Lax"
     }
 }));
-
-// debugging
-// app.use((req, res, next) => {
-//     console.log('Session ID:', req.session.id);
-//     console.log('Session:', req.session);
-//     next();
-// });
 
 // Route to initialize session
 app.get('/init-session', (req, res) => {
