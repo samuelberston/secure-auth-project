@@ -6,4 +6,6 @@ coverage/
 cypress/e2e/2-advanced-examples
 cypress/fixtures
 cypress/support
-server/logs/
+logs/
+frontend/node_modules
+backend/node_modules
