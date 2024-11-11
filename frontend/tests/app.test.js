@@ -101,30 +101,20 @@ describe('Frontend Application Tests', () => {
             );
         });
 
-        it('should fail to register a user with invalid credentials', async () => {
-            // Mock failed registration response
-            axios.post.mockRejectedValue({ status: 403 });
-
-            // Simulate user input and submit
+        it('should not submit the form and display validation errors when credentials are invalid', async () => {    
+            // Select form elements
             const usernameInput = document.getElementById('register-username');
-            const passwordInput = document.getElementById('register-password'); 
-
+            const passwordInput = document.getElementById('register-password');
+    
+            // Simulate user input with invalid credentials
             fireEvent.change(usernameInput, { target: { value: '1invaliduser1_$' } });
             fireEvent.change(passwordInput, { target: { value: 'invalid' } });
             fireEvent.submit(document.getElementById('register-form'));
-
-            // Wait for promises to resolve
-            await Promise.resolve(process.nextTick);
-
-            expect(axios.post).toHaveBeenCalledWith('http://localhost:3000/users',
-                { username: '1invaliduser1_$', password: 'invalid' },
-                {
-                    headers: { 'Content-Type': 'application/json' },
-                    withCredentials: true
-                }
-            );
+    
+            // Assert that axios.post was not called
+            expect(axios.post).not.toHaveBeenCalled();
         });
-    });
+        });
 
     describe('Login functionality', () => {
         it('should authenticate a user with valid credentials', async () => {

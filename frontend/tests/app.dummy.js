@@ -1,12 +1,82 @@
 import axios from 'axios'; // for testing, the axios dependency is imported into the browser through CDN
 import DOMPurify from 'dompurify';
 
+// get advice of the day
+async function getAdviceOfTheDay() {
+    // Check cache first
+    try {
+        const cachedAdvice = localStorage.getItem('advice');
+        if (cachedAdvice) {
+            // Check expired
+            const { advice, timestamp } = JSON.parse(cachedAdvice);
+            const now = new Date();
+            const cacheDate = new Date(timestamp);
+            if (now.toDateString() === cacheDate.toDateString()) {
+                document.getElementById('advice-data').textContent = advice;
+                return;
+            }
+        }
+    } catch (err) {
+        // Handle corrupted cache data
+        console.warn('Cache data is corrupted. Clearing advice cache.');
+        localStorage.removeItem('advice');
+    }
+
+    // If no cache or cache expired, fetch new advice
+    document.getElementById('advice-loading').style.display = 'block';
+    document.getElementById('advice-data').textContent = '';
+
+    try {
+        const response = await axios.get('http://localhost:3000/advice');
+        const { advice } = response.data;
+
+        // Cache advice
+        const timestamp = new Date().getTime();
+        localStorage.setItem(
+            'advice', 
+            JSON.stringify({ advice, timestamp })
+        );
+
+        // update DOM
+        document.getElementById('advice-data').textContent = advice;
+    } catch (err) {
+        if (err.response ) { 
+            switch (err.response.status) {
+                case 404:
+                    document.getElementById('advice-data').textContent = 'No advice found for today.';
+                    break;
+                default:
+                    document.getElementById('advice-data').textContent = 'Failed to load advice. Please try again later.';
+            }
+        } else {
+            document.getElementById('advice-data').textContent = 'Network error. Please check your connection.';
+        }
+        console.error('Error fetching advice:', err);
+    } finally {
+        // Always hide loading indicator
+        document.getElementById('advice-loading').style.display = 'none';
+    }
+}
+
 // handle registration
+
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^])[A-Za-z\d@$!%*?&#^]{8,}$/;
+
+function validatePassword(password) {
+  return passwordRegex.test(password);
+}
+
 async function handleRegistration(event) {
     event.preventDefault();
 
     const username = document.getElementById('register-username').value;
     const password = document.getElementById('register-password').value;
+    if (!validatePassword(password)) {
+        alert('Password does not meet the requirements.');
+        document.getElementById('register-username').value = '';
+        document.getElementById('register-password').value = '';
+        return;
+    }
 
     console.log('POST /users');
 
@@ -25,24 +95,40 @@ async function handleRegistration(event) {
             // reset input fields
             document.getElementById('register-username').value = '';
             document.getElementById('register-password').value = '';
+            document.getElementById('register-response').textContent = JSON.stringify(response.data.message, null, 2);
             
             console.log(`200 - Registered user with username ${username}.`);
             alert(`Registered user with username ${username}.`);
-        } else if (response.status === 403) {                           // Invalid credentials
-            document.getElementById('register-username').value = '';
-            document.getElementById('register-password').value = '';  
-
-            console.log('403 - Credentials do not meet requirements.');
-            alert('Credentials do not meet requirements. [Include requirements]')
-        } else if (response === 409) {                                  // User already exists
-            document.getElementById('register-username').value = '';
-            document.getElementById('register-password').value = '';    
-
-            console.log('409 - Attempt to register duplicate user');
-            alert('Please choose a different username.');
-        }
+        } 
     } catch (err) {
-        console.error(err);
+        if (err.response) {
+            console.log('err.response: ', err.response);
+            switch (err.response.status) {
+                case 400:
+                    console.error(err);
+                    document.getElementById('register-username').value = '';
+                    document.getElementById('register-password').value = '';  
+                    document.getElementById('register-response').textContent = JSON.stringify(err.response.data.message, null, 2);
+        
+                    console.log('400 - Credentials do not meet requirements.');
+                    alert('Credentials do not meet requirements. [Include requirements]')
+                    break;
+                case 409:
+                    console.error(err);
+                    document.getElementById('register-username').value = '';
+                    document.getElementById('register-password').value = '';  
+                    document.getElementById('register-response').textContent = JSON.stringify(err.response.data.message, null, 2);
+                    console.log('409 - Attempt to register duplicate user');
+                    alert('Please choose a different username.');
+                    break;
+                default:
+                    console.error(err);
+                    alert('Registration failed. Please check your credentials.');
+                }
+        } else {
+            console.error(err);
+            alert('Registration failed. Please check your credentials.');
+        }
     }
 }
 
@@ -83,16 +169,32 @@ async function handleLogin(event) {
             document.getElementById('logout-button').style.display = 'block';
 
             alert('Login successful!');
-        } else if (response.status === 401) {
-            console.warn('UNAUTHORIZED LOGIN ATTEMPT!');   // Unauthorized login attempt
-            alert('Login failed. Please check your credentials.');
-        } else if (response.status === 500) {              // Server-side error during login
-            console.error('Login failed with 500.');
-            alert('Login failed due to a server-side error.');
-        }
+        } 
     } catch (err) {
-        console.error(err);
-        alert('Login failed.');
+        if (err.response) {
+            switch (err.response.status) {
+                case 401:
+                    console.warn('UNAUTHORIZED LOGIN ATTEMPT!');   // Unauthorized login attempt
+                    // reset input fields
+                    document.getElementById('login-username').value = '';
+                    document.getElementById('login-password').value = '';
+                    alert('Login failed. Please check your credentials.');
+                    break;
+                case 500:
+                    console.error('Login failed with 500.');
+                    // reset input fields
+                    document.getElementById('login-username').value = '';
+                    document.getElementById('login-password').value = '';
+                    alert('Login failed due to a server-side error.');
+                    break;
+                default:
+                    console.error(err);
+                    alert('Login failed.');
+            }
+        } else {
+            console.error(err);
+            alert('Login failed.');
+        }
     }
 }
 
@@ -149,7 +251,7 @@ async function accessProtected() {
 
 // init function
 async function init() {
-    // initialize session and get CSRF token
+    // initialize session
     try {
         const response = await axios.get('/api/init-session', { withCredentials: true });
         console.log('Initialized session with id: ', response);
@@ -157,6 +259,9 @@ async function init() {
         console.error(err);
         alert('Please reload page: Unable to initialize session.');
     }
+
+    // get advice of the day
+    await getAdviceOfTheDay();
 
     // Event listeners
     document.getElementById('register-form').addEventListener('submit', handleRegistration);
