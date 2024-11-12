@@ -28,7 +28,7 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-const PORT = 8081;
+const PORT = 80;
 app.listen(PORT, () => {
     console.log(`Client server running on http://localhost:${PORT}`);
 });

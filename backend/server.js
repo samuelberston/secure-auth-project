@@ -59,7 +59,7 @@ app.use(cookieParser());
 
 // Enable requests from client
 app.use(cors({
-    origin: 'http://localhost:8081', // development client server's origin
+    origin: process.env.CLIENT_ORIGIN, // development client server's origin
     methods: ["GET", "PUT", "POST", "DELETE"],
     allowedHeaders: ["Authorization", "Origin", "X-Requested-With", "Content-Type", "Accept", "data", "body", "X-XSRF-TOKEN"],
     credentials: true, // Allow cookies to be sent and received
