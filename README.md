@@ -12,6 +12,3 @@ The project includes mitigations which address common OWASP security vulnerabili
 - use of secure HTTP headers such as x-xsrf-token, content-security-policy, etc.
 - use of high-entropy IDs and prevent insecure direct object reference
 
-## System architecture ##
-
-![System Architecture](docs/auth-server.jpeg)
