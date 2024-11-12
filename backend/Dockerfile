@@ -28,13 +28,21 @@ COPY --from=build /auth-server /auth-server
 
 # Create a non-root user and switch to it
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Set ownership and permissions
+RUN chown -R appuser:appgroup /auth-server
+
+# Create logs directory and set ownership
+RUN mkdir logs && chown -R appuser:appgroup /auth-server/logs
+
+# Switch to non-root user
 USER appuser
 
 # Expose the port the app runs on
 EXPOSE 3000
 
 # Define environment variable for production
-ENV NODE_ENV=production
+# ENV NODE_ENV=production
 
 # Start the application using node
-CMD ["node", "index.js"]
+CMD ["npm", "start"]
