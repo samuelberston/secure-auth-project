@@ -1,17 +1,20 @@
-# Use the official Nginx image
-FROM nginx:stable-alpine
+# Use the official Node.js LTS image
+FROM node:18-alpine
 
-# Remove the default Nginx welcome page
-RUN rm -rf /usr/share/nginx/html/*
+# Create and set the working directory
+WORKDIR /usr/src/app
 
-# Copy your static frontend files to the Nginx HTML directory
-COPY public/ /usr/share/nginx/html/
+# Copy package.json and package-lock.json to leverage Docker cache
+COPY package*.json ./
 
-# Optional: Add a custom Nginx configuration if needed
-# COPY nginx.conf /etc/nginx/nginx.conf
+# Install dependencies
+RUN npm install --production
 
-# Expose port 80
+# Copy the rest of the application code
+COPY . .
+
+# Expose the frontend port
 EXPOSE 80
 
-# Start Nginx in the foreground
-CMD ["nginx", "-g", "daemon off;"]
+# Start the Node.js application
+CMD ["node", "index.js"]
