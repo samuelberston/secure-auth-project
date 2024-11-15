@@ -16,9 +16,13 @@ const AdviceRouter = require("./routes/adviceRouter.js");
 const app = express();
 
 // Root Endpoint
-app.get('/', (req, res) => {
-    res.status(200).json({ message: 'Auth server is up and running.' });
-  });
+app.get('/', (req, res, next) => {
+    try {
+        res.status(200).json({ message: 'Auth server is up and running.' });
+    } catch (err) {
+        next(err);
+    }
+});
   
 // Health Check Endpoint
 app.get('/health', (req, res) => {
