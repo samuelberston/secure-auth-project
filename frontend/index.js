@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 const PORT = 80;
-const BACKEND_URL = process.env.BACKEND_URL || 'http://backend:3000'; 
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3000'; 
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
