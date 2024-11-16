@@ -42,7 +42,7 @@ AdviceRouter.get('/', async (req, res) => {
             return res.status(404).json({ message: "No advice found for today" });
         }
         // Cache the advice
-        adviceCache.set(dayOfWeek, advice.rows[0].advice) = dayOfWeek;
+        adviceCache.set(dayOfWeek, advice.rows[0].advice);
         logger.info(`Sent advice to IP: %s`, req.ip);
         return res.status(200).json(advice.rows[0]);
     } catch (err) {
