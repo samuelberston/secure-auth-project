@@ -1,4 +1,4 @@
-const backendUrl = 'http://localhost:3000';
+const backendUrl = 'http://backend:3000';
 
 // get advice of the day
 async function getAdviceOfTheDay() {
