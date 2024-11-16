@@ -63,7 +63,7 @@ app.use(cookieParser());
 
 // Enable requests from client
 app.use(cors({
-    origin: process.env.CLIENT_ORIGIN, // development client server's origin
+    origin: process.env.CLIENT_ORIGIN || "http://localhost", // development client server's origin
     methods: ["GET", "PUT", "POST", "DELETE"],
     allowedHeaders: ["Authorization", "Origin", "X-Requested-With", "Content-Type", "Accept", "data", "body", "X-XSRF-TOKEN"],
     credentials: true, // Allow cookies to be sent and received
@@ -72,7 +72,7 @@ app.use(cors({
 
 // Set up session management with secure cookies
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'secure-development-secret',
     resave: false,
     saveUninitialized: true,
     cookie: {
