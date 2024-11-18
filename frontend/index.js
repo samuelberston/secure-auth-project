@@ -22,6 +22,11 @@ const proxyMiddleware = createProxyMiddleware({
         '^/api': '', // Remove '/api' prefix when forwarding
     },
     secure: false, // development environment
+    logLevel: 'debug',    // Add logging for debugging
+    onError: (err, req, res) => {
+        console.error('Proxy Error:', err);
+        res.status(500).send('Proxy Error');
+    }
 })
 
 app.use('/api', proxyMiddleware);
