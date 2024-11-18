@@ -1,5 +1,3 @@
-const backendUrl = 'http://backend:3000';
-
 // get advice of the day
 async function getAdviceOfTheDay() {
     // Check cache first
@@ -26,7 +24,7 @@ async function getAdviceOfTheDay() {
     document.getElementById('advice-data').textContent = '';
 
     try {
-        const response = await axios.get(`${backendUrl}/advice`);
+        const response = await axios.get(`/api/advice`);
         const { advice } = response.data;
 
         // Cache advice
@@ -80,7 +78,7 @@ async function handleRegistration(event) {
     console.log('POST /users');
 
     try {
-        const response = await axios.post(`${backendUrl}:3000/users`,
+        const response = await axios.post(`/api/users`,
             { username, password },
             {
                 headers: {
@@ -139,7 +137,7 @@ async function handleLogin(event) {
     const password = document.getElementById("login-password").value;
 
     try {
-        const response = await axios.post(`${backendUrl}/login`, 
+        const response = await axios.post(`/api/login`, 
             { username, password }, 
             {
                 headers: {
@@ -219,7 +217,7 @@ async function accessProtected() {
     }
 
     try {
-        const response = await axios.get(`${backendUrl}/protected`, {
+        const response = await axios.get(`api/protected`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
