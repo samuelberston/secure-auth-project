@@ -17,10 +17,12 @@ COPY --chown=appuser:appgroup . .
 
 # Set ownership and permissions
 RUN mkdir logs && \
-    chown -R appuser:appgroup /auth-server/logs && \
+    chown -R appuser:appgroup /auth-server && \
     chmod -R 550 /auth-server && \
-    chmod -R 770 /auth-server/logs
-
+    chmod -R 770 /auth-server/logs && \
+    chmod 660 /auth-server/package.json && \
+    chmod 660 /auth-server/package-lock.json
+    
 # Switch to non-root user
 USER appuser
 
