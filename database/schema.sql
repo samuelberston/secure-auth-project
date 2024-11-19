@@ -13,6 +13,16 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
 );
 
+/* Federated credentials table */
+CREATE TABLE federated_credentials (
+    credential_id SERIAL PRIMARY KEY,
+    user_uuid UUID REFERENCES users(user_uuid),
+    provider VARCHAR(50) NOT NULL,
+    provider_user_id VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(provider, provider_user_id)
+);
+
 /* Advice of the day */
 CREATE TABLE advice (
     advice_id SERIAL PRIMARY KEY,
