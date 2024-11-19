@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');                           // Compare password 
 const jwt = require('jsonwebtoken');                        // Initiate JWT session
 const { validationResult } = require("express-validator");  // Validate credentials
 const logger = require("../logger.js");
+const rateLimit = require('express-rate-limit');
 
 // Validation middleware
 const { usernameValidator, passwordValidator } = require('../validators.js');
@@ -10,6 +11,18 @@ const { usernameValidator, passwordValidator } = require('../validators.js');
 const pool = require('../psql.js');                         
 
 const LoginRouter = require("express").Router();
+
+// route rate limiters
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // Limit each IP to 10 login attempts per windowMs
+    message: {
+        status: 429,
+        error: 'Too many login attempts, please try again later.'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
 
 /**
  * @route POST /login
@@ -40,6 +53,7 @@ const LoginRouter = require("express").Router();
  */
 LoginRouter.post(
     '/',
+    loginLimiter,
     [
         usernameValidator,
         passwordValidator
