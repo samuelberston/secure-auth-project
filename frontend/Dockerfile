@@ -1,5 +1,5 @@
 # Use the official Node.js LTS image
-FROM node:20-alpine
+FROM node:20-alpine3.19
 
 # Create a non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
@@ -11,7 +11,9 @@ WORKDIR /usr/src/app
 COPY --chown=appuser:appgroup package*.json ./
 
 # Install dependencies
-RUN npm install --production
+RUN npm ci --production
+RUN npm audit --audit-level=moderate && \
+    npm cache clean --force
 
 # Copy the rest of the application code with correct ownership
 COPY --chown=appuser:appgroup . .

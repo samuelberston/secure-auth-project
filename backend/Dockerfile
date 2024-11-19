@@ -1,4 +1,4 @@
-FROM node:20-alpine 
+FROM node:20-alpine3.19
 
 # Set working directory
 WORKDIR /auth-server
@@ -8,15 +8,18 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 # Install dependencies
 COPY package.json package-lock.json ./
-RUN npm install --production
+RUN npm ci --production
+RUN npm audit --audit-level=moderate && \
+    npm cache clean --force
 
 # Copy application code
-COPY . .
+COPY --chown=appuser:appgroup . .
 
 # Set ownership and permissions
-RUN chown -R appuser:appgroup /auth-server && \
-    mkdir logs && \
-    chown -R appuser:appgroup /auth-server/logs
+RUN mkdir logs && \
+    chown -R appuser:appgroup /auth-server/logs && \
+    chmod -R 550 /auth-server && \
+    chmod -R 770 /auth-server/logs
 
 # Switch to non-root user
 USER appuser
