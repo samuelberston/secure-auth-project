@@ -16,6 +16,7 @@ spec:
       containers:
       - name: frontend
         image: sberston/frontend:latest
+        imagePullPolicy: Never # for local development
         ports:
         - containerPort: 80
         env:
