@@ -63,12 +63,15 @@ app.use(cookieParser());
 
 // Enable requests from client
 app.use(cors({
-    origin: process.env.CLIENT_ORIGIN || "http://localhost", // development client server's origin
-    methods: ["GET", "PUT", "POST", "DELETE"],
+    origin: process.env.CLIENT_ORIGIN || "http://localhost:80", // development client server's origin
+    methods: ["GET", "PUT", "POST", "DELETE", "OPTIONS"],
     allowedHeaders: ["Authorization", "Origin", "X-Requested-With", "Content-Type", "Accept", "data", "body", "X-XSRF-TOKEN"],
     credentials: true, // Allow cookies to be sent and received
     optionsSuccessStatus: 200
 }));
+
+// trigger preflight request
+app.options('*', cors());
 
 // Set up session management with secure cookies
 app.use(session({
