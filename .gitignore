@@ -9,3 +9,4 @@ cypress/support
 logs/
 frontend/node_modules
 backend/node_modules
+kubernetes/secrets.yaml
