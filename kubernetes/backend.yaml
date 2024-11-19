@@ -16,6 +16,7 @@ spec:
       containers:
       - name: backend
         image: sberston/backend:latest
+        imagePullPolicy: Never # for local development
         ports:
         - containerPort: 3000
         env:
