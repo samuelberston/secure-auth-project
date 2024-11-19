@@ -6,42 +6,43 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Advice of the day -->
-    <div id="advice-of-the-day" aria-live="polite">
-        <h1>Advice of the day</h1>
-        <div id="advice-loading" style="display: none;">Loading...</div>
-        <p id="advice-data"></p>
-    </div>
-
-    <!-- Registration form -->
-    <form id="register-form" style="display: block;">
-        <h1>Register User</h1>
-        <label for="register-username">Username:</label><br>
-        <input type="text" name="username" id="register-username" required><br><br>
-
-        <label for="register-password">Password:</label><br>
-        <input type="password" name="password" id="register-password" required><br><br>
-        <div id="passwordHelp" class="form-text">
-            Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
+    <div class="container">
+        <!-- Advice of the day -->
+        <div id="advice-of-the-day" aria-live="polite">
+            <h1>Advice of the day</h1>
+            <div id="advice-loading" style="display: none;">Loading...</div>
+            <p id="advice-data"></p>
         </div>
-        <br>
-        <button type="submit" id="register-button">Register</button>
-        <pre id="register-response"></pre>
-    </form>
+
+        <!-- Registration form -->
+        <form id="register-form" class="register-form" style="display: block;">
+            <h1>Register User</h1>
+            <label for="register-username">Username:</label><br>
+            <input type="text" name="username" id="register-username" required><br><br>
+
+            <label for="register-password">Password:</label><br>
+            <input type="password" name="password" id="register-password" required><br><br>
+            <div id="passwordHelp" class="form-text">
+                Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
+            </div>
+            <br>
+            <button type="submit" id="register-button">Register</button>
+            <pre id="register-response"></pre>
+        </form>
 
 
-    <!-- Login Form -->
-    <form id="login-form" style="display: block;">
-        <h1>Login</h1>
-        <label for="login-username">Username:</label><br>
-        <input type="text" name="username" id="login-username" required><br><br>
+        <!-- Login Form -->
+        <form id="login-form" class="login-form" style="display: block;">
+            <h1>Login</h1>
+            <label for="login-username">Username:</label><br>
+            <input type="text" name="username" id="login-username" required><br><br>
 
-        <label for="login-password">Password:</label><br>
-        <input type="password" name="password" id="login-password" required><br><br>
+            <label for="login-password">Password:</label><br>
+            <input type="password" name="password" id="login-password" required><br><br>
 
-        <button type="submit" id="login-button">Login</button>
-    </form>
-
+            <button type="submit" id="login-button">Login</button>
+        </form>
+    </div>
     <!-- Protected Content -->
     <div id="protected-content" style="display: none;">
         <h2>Protected Data</h2>
