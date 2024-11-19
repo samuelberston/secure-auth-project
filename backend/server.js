@@ -91,21 +91,9 @@ app.get('/init-session', (req, res) => {
     res.sendStatus(200); // Respond with OK status
 });
 
-// route rate limiters
-const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10, // Limit each IP to 10 login attempts per windowMs
-    message: {
-        status: 429,
-        error: 'Too many login attempts, please try again later.'
-    },
-    standardHeaders: true,
-    legacyHeaders: false,
-});
-
 // routes
 app.use('/users', UsersRouter);
-app.use('/login', loginLimiter, LoginRouter);
+app.use('/login', LoginRouter);
 app.use('/protected', ProtectedRouter);
 app.use('/advice', AdviceRouter);
 
