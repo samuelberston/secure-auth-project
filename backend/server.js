@@ -6,7 +6,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const session = require('express-session');
 
-dotenv.config();
+dotenv.config(); // remove - unused in container environment
 
 const UsersRouter = require("./routes/usersRouter.js");
 const LoginRouter = require("./routes/loginRouter.js");
@@ -27,7 +27,7 @@ app.get('/', (req, res, next) => {
 // Health Check Endpoint
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'UP' });
-})
+});
 
 // Global rate limiter
 app.use(rateLimit({
