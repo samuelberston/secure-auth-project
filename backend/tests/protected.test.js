@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // server/tests/protected.test.js
 const request = require('supertest');
 const express = require('express');

@@ -1,5 +1,5 @@
 // Connect to database
-const fs = require('fs');
+// const fs = require('fs');
 const { Pool } = require('pg');
 
 const pool = new Pool({
