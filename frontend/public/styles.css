@@ -16,8 +16,23 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 2rem;
-    max-width: 800px;
+    max-width: 100%;  /* Changed from 800px */
     margin: 0 auto;
+}
+
+/* Add new grid container styles */
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* Adjust component widths */
+form, #protected-content, #advice-of-the-day {
+    width: auto;  /* Allow components to fit grid cells */
+    height: fit-content;
 }
 
 /* Typography */
