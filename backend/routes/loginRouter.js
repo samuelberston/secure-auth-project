@@ -58,45 +58,48 @@ LoginRouter.post(
             console.log("POST /login");
             // check user exists
             const userQuery = `SELECT EXISTS(SELECT 1 FROM users WHERE username = $1);`;
-            const userRes = await pool.query(userQuery, [username]);
-            console.log("username: ", userRes);
-            if (!userRes.rows[0].exists) {
-                console.log(`User ${username} does not exist`);
-                logger.warn(`Failed login attempt with non-existent username %s from IP: %s`, username, req.ip);
-                return res.status(401).json({ message: "Invalid credentials" });
+            try {
+                const userRes = await pool.query(userQuery, [username]);
+                if (!userRes.rows[0].exists) {
+                    console.log(`User ${username} does not exist`);
+                    logger.warn(`Failed login attempt with non-existent username %s from IP: %s`, username, req.ip);
+                    return res.status(401).json({ message: "Invalid credentials" });
+                }
+            } catch (err) {
+                console.error("Error checking user existence: ", err);
+                logger.error(`Error checking user existence for user %s from IP: %s`, username, req.ip);
+                return res.status(500).json({ message: "Error processing request" });
             }
-    
+            
             // check password
             const passwordQuery = `SELECT user_uuid, password_hash FROM users WHERE username = $1`;
             const values = [username];
             
             const hashRes = await pool.query(passwordQuery, values);
 
-            if (hashRes.rows.length) { // unnecessary conditional statement?
-                const storedHash = hashRes.rows[0].password_hash;
-                const passwordMatch = await bcrypt.compare(password, storedHash);
+            const storedHash = hashRes.rows[0].password_hash;
+            const passwordMatch = await bcrypt.compare(password, storedHash);
 
-                if (passwordMatch) {
-                    const userUUID = hashRes.rows[0].user_uuid;
+            if (passwordMatch) {
+                const userUUID = hashRes.rows[0].user_uuid;
 
-                    // Create a JWT token with a short expiry for security
-                    req.session.token = jwt.sign(
-                        { userId: userUUID, username: username },
-                        process.env.JWT_SECRET,
-                        { expiresIn: '1h' } // Token expires in 1 hour
-                    );
+                // Create a JWT token with a short expiry for security
+                req.session.token = jwt.sign(
+                    { userId: userUUID, username: username },
+                    process.env.JWT_SECRET,
+                    { expiresIn: '1h' } // Token expires in 1 hour
+                );
 
-                    console.log("Authentication successful");
-                    logger.info(`User %s successfully logged in from IP: %s`, username, req.ip);
-                    return res.status(200).json({ 
-                        token: req.session.token,
-                        message: "Authentication successful" 
-                    });
-                } else {
-                    console.log("Authentication failed - Invalid credentials");
-                    logger.warn(`Failed login attempt from user %s from IP: %s`, username, req.ip);
-                    return res.status(401).json({ message: "Invalid credentials" });
-                }
+                console.log("Authentication successful");
+                logger.info(`User %s successfully logged in from IP: %s`, username, req.ip);
+                return res.status(200).json({ 
+                    token: req.session.token,
+                    message: "Authentication successful" 
+                });
+            } else {
+                console.log("Authentication failed - Invalid credentials");
+                logger.warn(`Failed login attempt from user %s from IP: %s`, username, req.ip);
+                return res.status(401).json({ message: "Invalid credentials" });
             }
         } catch (err) {
             console.error("Error during authentication: ", err);
