@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require('uuid');                     // Generate user UUI
 const { validationResult } = require('express-validator');  // Validate credentials
 const logger = require('../logger.js');
 const pool = require('../psql.js');                         // PostgreSQL connection
+const rateLimit = require('express-rate-limit');
 
 const UsersRouter = require('express').Router();
 
@@ -20,6 +21,12 @@ const hashPassword = async (password) => {
   const hash = await bcrypt.hash(password, salt);
   return { salt, hash };
 };
+
+const createAccountLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour window
+  max: 5, // start blocking after 5 requests
+  message: "Too many accounts created from this IP, please try again after an hour"
+});
 
 /**
  * @route POST /users
@@ -46,6 +53,7 @@ const hashPassword = async (password) => {
  */
 UsersRouter.post(
     '/',
+    createAccountLimiter,
     [
       usernameValidator,
       passwordValidator
@@ -65,9 +73,8 @@ UsersRouter.post(
           const userRes = await pool.query(userQuery, [username]);
 
           if (userRes.rows[0].exists) {
-              console.log(`User ${username} already exists`);
-              // consider adding sleep to prevent sidechannel attacks
-              logger.warn(`Attempted duplicate registration attempt for user %s`, username);
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              logger.warn(`Duplicate registration attempt for user %s from IP %s`, username, req.ip);
               return res.status(409).json({ message: "Error creating user"} );
           }
 
@@ -79,12 +86,10 @@ UsersRouter.post(
         
           const result = await pool.query(query, values);
 
-          console.log('User created with ID:', result.rows[0].user_uuid);
-          logger.info(`Registered user %s from IP: %s`, username, req.ip);
+          logger.info(`Registered user %s from IP: %s with ID: %s`, username, req.ip, result.rows[0].user_uuid);
           return res.status(201).json({ message: "User registered successfully." });
 
         } catch (err) {
-          console.error('Error creating user:', err);
           logger.error(`Error while creating user %s from IP: %s. Error: %s`, username, req.ip, err);
           return next(err);
         }
