@@ -74,7 +74,7 @@ LoginRouter.post(
 
             if (hashRes.rows.length) { // unnecessary conditional statement?
                 const storedHash = hashRes.rows[0].password_hash;
-                const passwordMatch = bcrypt.compare(password, storedHash);
+                const passwordMatch = await bcrypt.compare(password, storedHash);
 
                 if (passwordMatch) {
                     const userUUID = hashRes.rows[0].user_uuid;
