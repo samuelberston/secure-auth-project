@@ -49,7 +49,7 @@ LoginRouter.post(
         const result = validationResult(req);       
         if (!result.isEmpty()) {
             // add sleep to prevent side-channel attacks
-            return res.status(401).send({ message: "Invalid credentials" });
+            return res.status(401).json({ message: "Invalid credentials" });
         }
 
         const { username, password } = req.body;
@@ -63,7 +63,7 @@ LoginRouter.post(
             if (!userRes.rows[0].exists) {
                 console.log(`User ${username} does not exist`);
                 logger.warn(`Failed login attempt with non-existent username %s from IP: %s`, username, req.ip);
-                return res.status(401).json({ message: "Invalid credentials"} );
+                return res.status(401).json({ message: "Invalid credentials" });
             }
     
             // check password
@@ -79,14 +79,12 @@ LoginRouter.post(
                 if (passwordMatch) {
                     const userUUID = hashRes.rows[0].user_uuid;
 
-                    if (!req.session.token) {
-                        // Create a JWT token with a short expiry for security
-                        req.session.token = jwt.sign(
-                            { userId: userUUID, username: username },
-                            process.env.JWT_SECRET,
-                            { expiresIn: '1h' } // Token expires in 1 hour
-                        );
-                    }
+                    // Create a JWT token with a short expiry for security
+                    req.session.token = jwt.sign(
+                        { userId: userUUID, username: username },
+                        process.env.JWT_SECRET,
+                        { expiresIn: '1h' } // Token expires in 1 hour
+                    );
 
                     console.log("Authentication successful");
                     logger.info(`User %s successfully logged in from IP: %s`, username, req.ip);
