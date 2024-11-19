@@ -18,6 +18,10 @@ function authenticateToken(req, res, next) {
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (!process.env.JWT_SECRET) {
+            logger.error('JWT_SECRET environment variable is not set');
+            return res.status(500).json({ message: 'Server configuration error' });
+        }
         if (err) {
             logger.warn(`Attempt to access protected data with expired JWT from IP: %s`, req.ip);
             return res.status(403).json({ message: 'Token invalid or expired.' });
