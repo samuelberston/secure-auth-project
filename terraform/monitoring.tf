@@ -1,1 +1,1 @@
-// TODO: Set up Prometheus & Grafana
+// TODO: Set up CloudTrail & CloudWatch
