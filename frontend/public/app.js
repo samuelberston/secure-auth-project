@@ -78,7 +78,7 @@ async function handleRegistration(event) {
     console.log('POST /users');
 
     try {
-        const response = await axios.post(`/api/users`,
+        const response = await axios.post(`/backend/users`,
             { username, password },
             {
                 headers: {
@@ -137,7 +137,7 @@ async function handleLogin(event) {
     const password = document.getElementById("login-password").value;
 
     try {
-        const response = await axios.post(`/api/login`, 
+        const response = await axios.post(`/backend/login`, 
             { username, password }, 
             {
                 headers: {
@@ -248,6 +248,7 @@ async function accessProtected() {
 
 // init function
 async function init() {
+    
     // initialize session
     try {
         const response = await axios.get('/api/init-session', { withCredentials: true });
@@ -259,7 +260,7 @@ async function init() {
 
     // get advice of the day
     await getAdviceOfTheDay();
-
+    
     // Event listeners
     document.getElementById('register-form').addEventListener('submit', handleRegistration);
     document.getElementById('login-form').addEventListener('submit', handleLogin);
