@@ -5,7 +5,7 @@ metadata:
   namespace: secure-auth
 spec:
   rules:
-  - host: your-domain.com  # Replace with your domain
+  - host: localhost  # Replace with your domain
     http:
       paths:
       - path: /
