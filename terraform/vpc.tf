@@ -10,5 +10,3 @@ module "vpc" {
 
   enable_nat_gateway = true
 }
-
-// subnets, NAT Gateways, Security Groups, etc.
