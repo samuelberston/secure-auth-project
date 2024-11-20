@@ -10,3 +10,7 @@ logs/
 frontend/node_modules
 backend/node_modules
 kubernetes/secrets.yaml
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
