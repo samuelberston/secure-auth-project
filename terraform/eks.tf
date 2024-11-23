@@ -48,6 +48,22 @@ module "eks" {
       desired_size = 2
 
       instance_types = ["t3.medium"] # Not suitable for production
+
+      # Disk encryption for EBS volumes
+      block_device_mappings = {
+        xvda = {
+          device_name = "/dev/xvda"
+          ebs = {
+            encrypted  = true
+            kms_key_id = aws_kms_key.eks.arn
+          }
+        }
+      }
+      
+      # Add update configuration
+      update_config = {
+        max_unavailable_percentage = 33
+      }
     }
   }
 
@@ -61,21 +77,7 @@ module "eks" {
     }
   ]
 
-  # Disk encryption for EBS volumes
-  block_device_mappings = {
-    xvda = {
-      device_name = "/dev/xvda"
-      ebs = {
-        encrypted  = true
-        kms_key_id = aws_kms_key.eks.arn
-      }
-    }
-  }
 
-  # Add update configuration
-  update_config = {
-    max_unavailable_percentage = 33
-  }
 }
 
 # Add KMS key for cluster encryption
