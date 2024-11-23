@@ -30,9 +30,9 @@ module "eks" {
   node_security_group_additional_rules = {
     ingress_self_all = {
       description = "Node to node all ports/protocols"
-      protocol    = "-1"
-      from_port   = 0
-      to_port     = 0
+      protocol    = "tcp"
+      from_port   = 443
+      to_port     = 443
       type        = "ingress"
       self        = true
     }
@@ -47,7 +47,7 @@ module "eks" {
       max_size     = 3
       desired_size = 2
 
-      instance_types = ["t3.medium"]
+      instance_types = ["t3.medium"] # Not suitable for production
     }
   }
 
@@ -60,12 +60,28 @@ module "eks" {
       groups   = ["system:masters"]
     }
   ]
+
+  # Disk encryption for EBS volumes
+  block_device_mappings = {
+    xvda = {
+      device_name = "/dev/xvda"
+      ebs = {
+        encrypted  = true
+        kms_key_id = aws_kms_key.eks.arn
+      }
+    }
+  }
+
+  # Add update configuration
+  update_config = {
+    max_unavailable_percentage = 33
+  }
 }
 
 # Add KMS key for cluster encryption
 resource "aws_kms_key" "eks" {
   description             = "EKS Secret Encryption Key"
-  deletion_window_in_days = 7
+  deletion_window_in_days = 30
   enable_key_rotation     = true
 
   policy = jsonencode({
@@ -77,7 +93,13 @@ resource "aws_kms_key" "eks" {
         Principal = {
           AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
         }
-        Action   = "kms:*"
+        Action = [
+          "kms:Create*",
+          "kms:Describe*",
+          "kms:Enable*",
+          "kms:List*",
+          "kms:Put*"
+        ]
         Resource = "*"
       },
       {
