@@ -122,7 +122,7 @@ resource "aws_kms_key" "eks" {
 
   tags = {
     Name        = "eks-secrets-key"
-    Environment = "development"
+    Environment = "production"
     ManagedBy   = "terraform"
     Owner       = "samuelberston"
   }
