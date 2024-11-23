@@ -30,9 +30,9 @@ module "eks" {
   node_security_group_additional_rules = {
     ingress_self_all = {
       description = "Node to node all ports/protocols"
-      protocol    = "tcp"
-      from_port   = 443
-      to_port     = 443
+      protocol    = "-1" # Update with whitelist
+      from_port   = 0 # Update
+      to_port     = 0 # Update
       type        = "ingress"
       self        = true
     }
@@ -121,7 +121,10 @@ resource "aws_kms_key" "eks" {
   })
 
   tags = {
-    Name = "eks-secrets-key"
+    Name        = "eks-secrets-key"
+    Environment = "development"
+    ManagedBy   = "terraform"
+    Owner       = "samuelberston"
   }
 }
 
