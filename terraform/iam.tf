@@ -4,7 +4,7 @@ resource "aws_iam_policy" "eks_cluster_creation" {
   description = "Policy for creating EKS cluster and related resources"
 
   policy = jsonencode({
-    Version = "2012-10-17"
+    Version = "2012-10-17",
     Statement = [
       {
         Effect = "Allow"
@@ -13,6 +13,7 @@ resource "aws_iam_policy" "eks_cluster_creation" {
           "kms:TagResource",
           "kms:CreateAlias",
           "kms:DeleteAlias",
+          "kms:DescribeKey",
           "kms:UpdateAlias",
           "kms:GetKeyPolicy",
           "kms:PutKeyPolicy",
@@ -45,13 +46,28 @@ resource "aws_iam_policy" "eks_cluster_creation" {
           "eks:DescribeCluster",
           "eks:CreateCluster",
           "eks:DeleteCluster",
+          "eks:DescribeCluster",
           "eks:UpdateClusterVersion",
           "eks:UpdateClusterConfig",
           "eks:ListClusters",
           "eks:TagResource",
-          "eks:UntagResource"
+          "eks:UntagResource",
+          "eks:CreateNodeGroup",
+          "eks:DescribeNodegroup",
+          "eks:CreateNodegroup",
+          "eks:DeleteNodegroup",
+          "eks:UpdateNodegroupConfig",
+          "eks:UpdateNodegroupVersion",
+          "eks:ListNodegroups",
+          "eks:AssociateEncryptionConfig",
         ]
-        Resource = "*"
+        Resource = [
+          "arn:aws:eks:*:${data.aws_caller_identity.current.account_id}:nodegroup/*/*/*",
+          "arn:aws:eks:*:${data.aws_caller_identity.current.account_id}:cluster/*",
+          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/*",  # Added for IAM role access
+          "arn:aws:kms:*:${data.aws_caller_identity.current.account_id}:key/*",  # Added for KMS key access
+          "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:*"  # Added for CloudWatch Logs access        
+        ]
       }
     ]
   })
