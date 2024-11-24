@@ -1,7 +1,5 @@
 terraform {
-
   required_providers {
-
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.0"
@@ -11,7 +9,6 @@ terraform {
       source  = "hashicorp/tls"
       version = "~> 3.0"
     }
-    
   }
 
   required_version = ">= 1.0.0"
@@ -23,7 +20,6 @@ terraform {
     dynamodb_table = "terraform-state-locks"   # DynamoDB table for state locking
     encrypt        = true                      # Enable encryption for state file
   }
-
 }
 
 provider "aws" {
