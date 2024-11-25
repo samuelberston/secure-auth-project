@@ -1,9 +1,42 @@
+# Kubernetes provider configuration
+provider "kubernetes" {
+  # EKS cluster API endpoint
+  host                   = module.eks.cluster_endpoint
+  
+  # EKS cluster CA certificate
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+
+  # AWS CLI authentication for EKS
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+
+    # AWS CLI command
+    command     = "aws"
+
+    # Get EKS authentication token
+    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+  }
+}
+
+# Add this provider for managing the aws-auth ConfigMap
+provider "kubectl" {
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  load_config_file       = false
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name, "--region", local.region]
+  }
+}
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 19.0"
 
   cluster_name    = "secure-auth-cluster"
-  cluster_version = "1.27"
+  cluster_version = "1.27" # Update to version 1.28
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
@@ -41,11 +74,29 @@ module "eks" {
       max_size     = 3
       desired_size = 2
 
-      instance_types = ["t3.medium"] # Not suitable for production
+      instance_types = ["t3.medium"] # Update to use production-suitable instance type
+            
+      # Enable detailed monitoring
+      enable_monitoring = true
+
+      # Add labels and taints for workload management
+      labels = {
+        Environment = "production"
+      }
+
+      # Enable node group autoscaling
+      enable_autoscaling = true
+
+      # TODO: Configure EBS volumes
     }
   }
 
+  # TODO:
+  # Enable control plane logging
+  # Enable secret encryption using KMS
+
   # Configure cluster access
+  # Note: We should not use wildcard (*) for resources in production
   manage_aws_auth_configmap = true
   aws_auth_roles = [
     {

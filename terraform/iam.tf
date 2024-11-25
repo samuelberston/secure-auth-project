@@ -9,6 +9,7 @@ resource "aws_iam_policy" "eks_cluster_creation" {
       {
         Effect = "Allow"
         Action = [
+          # KMS
           "kms:CreateKey",
           "kms:TagResource",
           "kms:CreateAlias",
@@ -17,9 +18,13 @@ resource "aws_iam_policy" "eks_cluster_creation" {
           "kms:UpdateAlias",
           "kms:GetKeyPolicy",
           "kms:PutKeyPolicy",
+
+          # CloudWatch Logs
           "logs:CreateLogGroup",
           "logs:DeleteLogGroup",
           "logs:PutRetentionPolicy",
+
+          # IAM
           "iam:CreateRole",
           "iam:DeleteRole",
           "iam:GetRole",
@@ -30,7 +35,12 @@ resource "aws_iam_policy" "eks_cluster_creation" {
           "iam:CreateServiceLinkedRole",
           "iam:ListRoles",
           "iam:ListInstanceProfiles",
-          "iam:PassRole", 
+          "iam:PassRole",
+          "iam:GetInstanceProfile",
+          "iam:GetRolePolicy",
+          "iam:ListAttachedRolePolicies",
+          
+          # EC2
           "ec2:DescribeSubnets",
           "ec2:DescribeVpcs",
           "ec2:DescribeSecurityGroups",
@@ -43,6 +53,16 @@ resource "aws_iam_policy" "eks_cluster_creation" {
           "ec2:RevokeSecurityGroupIngress",
           "ec2:CreateFlowLogs",
           "ec2:DeleteFlowLogs",
+          "ec2:CreateLaunchTemplate",
+          "ec2:DeleteLaunchTemplate",
+          "ec2:DescribeLaunchTemplates",
+          "ec2:DescribeLaunchTemplateVersions",
+          "ec2:CreateFleet",
+          "ec2:RunInstances",
+          "ec2:DescribeInstances",
+
+          # EKS
+          "eks:AssociateEncryptionConfig",
           "eks:DescribeCluster",
           "eks:CreateCluster",
           "eks:DeleteCluster",
@@ -60,13 +80,20 @@ resource "aws_iam_policy" "eks_cluster_creation" {
           "eks:UpdateNodegroupVersion",
           "eks:ListNodegroups",
           "eks:AssociateEncryptionConfig",
+          "eks:UpdateNodegroupConfig",
+          "eks:UpdateNodegroupVersion",
+          "eks:DescribeUpdate",
+          "autoscaling:DescribeAutoScalingGroups",
+          "autoscaling:UpdateAutoScalingGroup",
         ]
         Resource = [
           "arn:aws:eks:*:${data.aws_caller_identity.current.account_id}:nodegroup/*/*/*",
           "arn:aws:eks:*:${data.aws_caller_identity.current.account_id}:cluster/*",
           "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/*",  # Added for IAM role access
           "arn:aws:kms:*:${data.aws_caller_identity.current.account_id}:key/*",  # Added for KMS key access
-          "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:*"  # Added for CloudWatch Logs access        
+          "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:*",  # Added for CloudWatch Logs access        
+          "arn:aws:ec2:*:${data.aws_caller_identity.current.account_id}:launch-template/*",
+          "arn:aws:autoscaling:*:${data.aws_caller_identity.current.account_id}:autoScalingGroup:*"
         ]
       },
 
