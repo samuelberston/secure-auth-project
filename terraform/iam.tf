@@ -106,7 +106,8 @@ resource "aws_iam_policy" "eks_cluster_creation" {
           "eks:DescribeCluster",
           "eks:DescribeNodegroup",
           "eks:ListClusters",
-          "eks:ListNodegroups"
+          "eks:ListNodegroups",
+          "eks:DeleteCluster",
         ]
         Resource = "*"
       }
