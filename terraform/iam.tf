@@ -68,6 +68,20 @@ resource "aws_iam_policy" "eks_cluster_creation" {
           "arn:aws:kms:*:${data.aws_caller_identity.current.account_id}:key/*",  # Added for KMS key access
           "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:*"  # Added for CloudWatch Logs access        
         ]
+      },
+
+      # For development - Check if recourse exists before creating them
+      # In production, we should not allow wildcard (*) for resources
+      {
+        Effect = "Allow"
+        Action = [
+          "eks:CreateCluster",
+          "eks:DescribeCluster",
+          "eks:DescribeNodegroup",
+          "eks:ListClusters",
+          "eks:ListNodegroups"
+        ]
+        Resource = "*"
       }
     ]
   })
