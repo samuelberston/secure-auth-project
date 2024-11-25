@@ -9,6 +9,29 @@ resource "aws_iam_policy" "eks_cluster_creation" {
       {
         Effect = "Allow"
         Action = [
+          "s3:ListBucket",
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ]
+        Resource = [
+          "arn:aws:s3:::secure-auth-tf-state-bucket",
+          "arn:aws:s3:::secure-auth-tf-state-bucket/*"
+        ]
+      },
+      // Add DynamoDB permissions for state locking
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:DeleteItem"
+        ]
+        Resource = "arn:aws:dynamodb:us-west-1:${data.aws_caller_identity.current.account_id}:table/terraform-state-locks"
+      },
+      {
+        Effect = "Allow"
+        Action = [
           # KMS
           "kms:CreateKey",
           "kms:TagResource",

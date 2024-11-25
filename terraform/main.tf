@@ -29,6 +29,7 @@ terraform {
 
 provider "aws" {
   region = "us-west-1"
+  profile = "secure-auth-project"
 }
 
 # Data block to retrieve the AWS account ID
