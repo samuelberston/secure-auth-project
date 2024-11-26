@@ -58,7 +58,7 @@ resource "aws_kms_key" "eks" {
         Resource = "*"
       },
       {
-        Sid    = "Allow EKS Cluster Role"  // Add this block
+        Sid    = "Allow EKS Cluster Role"
         Effect = "Allow"
         Principal = {
           AWS = aws_iam_role.eks_cluster_role.arn
@@ -78,7 +78,7 @@ resource "aws_kms_key" "eks" {
   })
 }
 
-# Add an alias for easier key management
+# Alias for easier key management
 resource "aws_kms_alias" "eks" {
   name          = "alias/eks-secure-auth-cluster-v2"
   target_key_id = aws_kms_key.eks.key_id

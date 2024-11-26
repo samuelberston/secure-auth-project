@@ -14,10 +14,10 @@ module "vpc" {
   enable_dns_support   = true
   
   # Add IAM role for VPC flow logs
-  enable_flow_log                      = true
-  create_flow_log_cloudwatch_iam_role = true
-  create_flow_log_cloudwatch_log_group = true
-  flow_log_destination_type            = "cloud-watch-logs"
+  enable_flow_log                           = true
+  create_flow_log_cloudwatch_iam_role       = true
+  create_flow_log_cloudwatch_log_group      = true
+  flow_log_destination_type                 = "cloud-watch-logs"
   flow_log_cloudwatch_log_group_name_prefix = "/aws/vpc-flow-logs/"
 
   tags = {
