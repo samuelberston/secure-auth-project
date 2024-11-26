@@ -29,12 +29,23 @@ resource "aws_iam_role_policy" "eks_admin_kms" {
       {
         Effect = "Allow"
         Action = [
-          "kms:Decrypt",
-          "kms:DescribeKey",
-          "kms:Encrypt",
-          "kms:GenerateDataKey*"
+          "kms:Create*",
+          "kms:Describe*",
+          "kms:Enable*",
+          "kms:List*",
+          "kms:Put*",
+          "kms:Update*",
+          "kms:Revoke*",
+          "kms:Disable*",
+          "kms:Get*",
+          "kms:Delete*",
+          "kms:ScheduleKeyDeletion",
+          "kms:CancelKeyDeletion"
         ]
-        Resource = [aws_kms_key.eks.arn]
+        Resource = [
+          aws_kms_key.eks.arn,
+          "arn:aws:kms:us-west-1:${data.aws_caller_identity.current.account_id}:alias/eks-secrets"
+        ]
       }
     ]
   })
@@ -72,7 +83,7 @@ resource "aws_iam_role_policy" "eks_admin" {
 # Allow secure-auth-user to assume the admin role
 resource "aws_iam_user_policy" "allow_assume_eks_admin" {
   name = "allow-assume-eks-admin"
-  user = "secure-auth-user"  # Reference your existing user
+  user = "secure-auth-user"  # Existing AWS user
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -278,74 +289,8 @@ resource "aws_iam_role_policy" "node_group_autoscaling" {
   })
 }
 
-# Allow secure-auth-user to manage KMS keys
-resource "aws_iam_user_policy" "secure_auth_user_kms" {
-  name = "secure-auth-user-kms"
-  user = "secure-auth-user"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "kms:Create*",
-          "kms:Describe*",
-          "kms:Enable*",
-          "kms:List*",
-          "kms:Put*",
-          "kms:Update*",
-          "kms:Revoke*",
-          "kms:Disable*",
-          "kms:Get*",
-          "kms:Delete*",
-          "kms:ScheduleKeyDeletion",
-          "kms:CancelKeyDeletion"
-        ]
-        Resource = [
-          aws_kms_key.eks.arn,
-          "arn:aws:kms:us-west-1:${data.aws_caller_identity.current.account_id}:alias/eks-secrets"
-        ]
-      }
-    ]
-  })
-}
-
 # Create an instance profile for the node group
 resource "aws_iam_instance_profile" "eks_node_group" {
   name = "eks-node-group-profile"
   role = aws_iam_role.eks_node_group_role.name
-}
-
-# Add EC2 permissions for the node group role
-resource "aws_iam_role_policy" "node_group_ec2_permissions" {
-  name = "eks-node-group-ec2"
-  role = aws_iam_role.eks_node_group_role.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "ec2:CreateLaunchTemplate",
-          "ec2:CreateFleet",
-          "ec2:RunInstances",
-          "ec2:CreateTags",
-          "ec2:DescribeLaunchTemplates",
-          "ec2:DescribeLaunchTemplateVersions",
-          "ec2:DescribeInstances",
-          "ec2:DescribeSecurityGroups",
-          "ec2:DescribeSubnets",
-          "ec2:DescribeInstanceTypes",
-          "ec2:DescribeInstanceTypeOfferings",
-          "ec2:DescribeAvailabilityZones",
-          "ec2:DeleteLaunchTemplate",
-          "iam:PassRole",
-          "iam:CreateServiceLinkedRole"
-        ]
-        Resource = "*"
-      }
-    ]
-  })
 }
