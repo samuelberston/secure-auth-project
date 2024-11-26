@@ -1,3 +1,14 @@
+provider "kubernetes" {
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+  }
+}
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 19.0"
@@ -35,6 +46,16 @@ module "eks" {
   # Configure OIDC provider for service account integration
   enable_irsa = true
 
+  # Add KMS key for secrets encryption
+  create_kms_key = false
+  cluster_encryption_config = {
+    provider_key_arn = aws_kms_key.eks.arn
+    resources        = ["secrets"]
+  }
+
+  # Update to use the IAM roles we've created
+  iam_role_arn = aws_iam_role.eks_cluster_role.arn
+
   eks_managed_node_groups = {
     default = {
       min_size     = 1
@@ -42,16 +63,31 @@ module "eks" {
       desired_size = 2
 
       instance_types = ["t3.medium"] # Not suitable for production
+      iam_role_arn   = aws_iam_role.eks_node_group_role.arn
+
+      # Add launch template configuration
+      create_launch_template = true
+      launch_template_name   = "eks-managed-node-group"
+      launch_template_tags = {
+        Name = "eks-managed-node-group-template"
+      }
+
+      # Add instance profile configuration
+      create_iam_instance_profile = true
+      iam_instance_profile_arn    = aws_iam_instance_profile.eks_node_group.arn
+      
+      # Ensure proper instance profile association
+      enable_bootstrap_user_data = true
+      bootstrap_extra_args      = "--container-runtime containerd"
+
+      # Add required tags
+      tags = {
+        "k8s.io/cluster-autoscaler/enabled" = "true"
+        "k8s.io/cluster-autoscaler/${module.eks.cluster_name}" = "owned"
+      }
     }
   }
 
   # Configure cluster access
-  manage_aws_auth_configmap = true
-  aws_auth_roles = [
-    {
-      rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/AdminRole"
-      username = "admin"
-      groups   = ["system:masters"]
-    }
-  ]
+  manage_aws_auth_configmap = false
 }
