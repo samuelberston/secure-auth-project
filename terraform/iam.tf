@@ -75,6 +75,15 @@ resource "aws_iam_role_policy" "eks_admin" {
         Resource = [
           module.eks.cluster_arn
         ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ec2:RunInstances",
+          "ec2:DescribeLaunchTemplates",
+          "ec2:DescribeLaunchTemplateVersions"
+        ]
+        Resource = "*"
       }
     ]
   })
