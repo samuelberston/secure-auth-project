@@ -47,7 +47,7 @@ module "eks" {
   enable_irsa = true
 
   # Add KMS key for secrets encryption
-  create_kms_key = false
+  create_kms_key = false # Manage in kms.tf file
   cluster_encryption_config = {
     provider_key_arn = aws_kms_key.eks.arn
     resources        = ["secrets"]
@@ -88,6 +88,6 @@ module "eks" {
     }
   }
 
-  # Configure cluster access
+  # Configure cluster access with IAM roles
   manage_aws_auth_configmap = false
 }
