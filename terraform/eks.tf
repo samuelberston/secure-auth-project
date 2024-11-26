@@ -46,7 +46,7 @@ module "eks" {
   # Configure OIDC provider for service account integration
   enable_irsa = true
 
-  # Add KMS key for secrets encryption
+  # KMS for cluster secrets encryption
   create_kms_key = false # Manage in kms.tf file
   cluster_encryption_config = {
     provider_key_arn = aws_kms_key.eks.arn
@@ -78,7 +78,7 @@ module "eks" {
       
       # Ensure proper instance profile association
       enable_bootstrap_user_data = true
-      bootstrap_extra_args      = "--container-runtime containerd"
+      bootstrap_extra_args       = "--container-runtime containerd"
 
       # Add required tags
       tags = {
