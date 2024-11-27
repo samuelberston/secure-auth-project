@@ -74,6 +74,26 @@ module "eks" {
         Name = "eks-managed-node-group-template"
       }
 
+      # Proper user data configuration
+      enable_bootstrap_user_data = true
+      bootstrap_extra_args      = "--container-runtime containerd"
+      user_data_template_path   = "templates/userdata.tpl"  # Add this
+      
+      # Additional launch template configurations
+      launch_template_description = "EKS managed node group launch template"
+      update_launch_template_default_version = true
+      
+      block_device_mappings = {
+        xvda = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size           = 50
+            volume_type          = "gp3"
+            delete_on_termination = true
+          }
+        }
+      }
+
       # Add instance profile configuration
       create_iam_instance_profile = true
       iam_instance_profile_arn    = aws_iam_instance_profile.eks_node_group.arn
