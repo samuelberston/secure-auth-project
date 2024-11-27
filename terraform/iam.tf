@@ -18,6 +18,43 @@ resource "aws_iam_role" "eks_admin" {
   })
 }
 
+# Add ECR permissions to the admin role
+resource "aws_iam_role_policy" "eks_admin_ecr" {
+  name = "eks-admin-ecr"
+  role = aws_iam_role.eks_admin.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:GetRepositoryPolicy",
+          "ecr:DescribeRepositories",
+          "ecr:ListImages",
+          "ecr:DescribeImages",
+          "ecr:BatchGetImage",
+          "ecr:InitiateLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:CompleteLayerUpload",
+          "ecr:PutImage"
+        ]
+        Resource = [
+          "arn:aws:ecr:us-west-1:${data.aws_caller_identity.current.account_id}:repository/auth-service"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = "ecr:GetAuthorizationToken",
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 # KMS permissions for the admin role
 resource "aws_iam_role_policy" "eks_admin_kms" {
   name = "eks-admin-kms"

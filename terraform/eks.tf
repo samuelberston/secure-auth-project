@@ -73,11 +73,6 @@ module "eks" {
       launch_template_tags = {
         Name = "eks-managed-node-group-template"
       }
-
-      # Proper user data configuration
-      enable_bootstrap_user_data = true
-      bootstrap_extra_args      = "--container-runtime containerd"
-      user_data_template_path   = "templates/userdata.tpl"  # Add this
       
       # Additional launch template configurations
       launch_template_description = "EKS managed node group launch template"
@@ -94,14 +89,20 @@ module "eks" {
         }
       }
 
+      # Add these variables for the userdata template
+      enable_bootstrap_user_data = true
+      user_data_template_path = "templates/userdata.tpl"
+      userdata_template_vars = {
+        cluster_name         = module.eks.cluster_name
+        cluster_endpoint     = module.eks.cluster_endpoint
+        cluster_auth_base64  = module.eks.cluster_certificate_authority_data
+        bootstrap_extra_args = "--container-runtime containerd --kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=normal'"
+      }
+
       # Add instance profile configuration
       create_iam_instance_profile = true
       iam_instance_profile_arn    = aws_iam_instance_profile.eks_node_group.arn
       
-      # Ensure proper instance profile association
-      enable_bootstrap_user_data = true
-      bootstrap_extra_args       = "--container-runtime containerd"
-
       # Add required tags
       tags = {
         "k8s.io/cluster-autoscaler/enabled" = "true"
