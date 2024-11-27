@@ -97,7 +97,33 @@ module "eks" {
   # Update to use the IAM roles we've created
   iam_role_arn = aws_iam_role.eks_cluster_role.arn
 
-  # Add cluster addons - coredns etc
+  # Cluster addons - coredns, kube-proxy, vpc-cni
+  cluster_addons = {
+    coredns = {
+      most_recent = true
+      configuration_values = jsonencode({
+        computeType = "Fargate"
+        # Add any custom CoreDNS configuration here if needed
+      })
+    }
+    kube-proxy = {
+      most_recent = true
+    }
+    vpc-cni = {
+      most_recent = true
+      # Enable prefix delegation for increased pod density
+      configuration_values = jsonencode({
+        env = {
+          ENABLE_PREFIX_DELEGATION = "true"
+          WARM_PREFIX_TARGET      = "1"
+        }
+      })
+    }
+    aws-ebs-csi-driver = {
+      most_recent = true
+      service_account_role_arn = aws_iam_role.ebs_csi_driver_role.arn # You'll need to create this IAM role
+    }
+  }
 
   eks_managed_node_groups = {
     default = {
@@ -131,7 +157,7 @@ module "eks" {
       # User data configuration
       enable_bootstrap_user_data = true
       bootstrap_extra_args      = "--container-runtime containerd"
-      user_data_template_path   = "templates/userdata.tpl"  # Add this
+      user_data_template_path   = "templates/userdata.tpl"
 
       # IAM instance profile configuration
       create_iam_instance_profile = true
@@ -147,4 +173,31 @@ module "eks" {
 
   # Configure cluster access with IAM roles
   # manage_aws_auth_configmap = false
+}
+
+resource "aws_iam_role" "ebs_csi_driver_role" {
+  name = "eks-ebs-csi-driver"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Federated = module.eks.oidc_provider_arn
+        }
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Condition = {
+          StringEquals = {
+            "${module.eks.oidc_provider}:sub": "system:serviceaccount:kube-system:ebs-csi-controller-sa"
+          }
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ebs_csi_driver_policy" {
+  role       = aws_iam_role.ebs_csi_driver_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
 }
