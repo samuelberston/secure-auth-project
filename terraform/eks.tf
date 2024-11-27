@@ -31,15 +31,36 @@ module "eks" {
     }
   }
 
-  # Allow ingress traffic between worker nodes in the cluster
+  # Node security group rules
   node_security_group_additional_rules = {
+    # Node to node communication
     ingress_self_all = {
       description = "Node to node all ports/protocols"
-      protocol    = "-1" # Update with whitelist
-      from_port   = 0 # Update
-      to_port     = 0 # Update
+      protocol    = "tcp"
+      from_port   = 443
+      to_port     = 443
       type        = "ingress"
       self        = true
+    }
+
+    # Kubelet communication
+    ingress_cluster_kubelet = {
+      description                = "Cluster to node kubelet"
+      protocol                   = "tcp"
+      from_port                  = 10250
+      to_port                    = 10250
+      type                       = "ingress"
+      source_cluster_security_group = true
+    }
+    
+    # Node to cluster API
+    egress_cluster_443 = {
+      description                = "Node to cluster API"
+      protocol                   = "tcp"
+      from_port                  = 443
+      to_port                    = 443
+      type                       = "egress"
+      source_cluster_security_group = true
     }
   }
 
@@ -70,13 +91,11 @@ module "eks" {
       # Add launch template configuration
       create_launch_template = true
       launch_template_name   = "eks-managed-node-group"
+      launch_template_description = "EKS managed node group launch template"
+      update_launch_template_default_version = true
       launch_template_tags = {
         Name = "eks-managed-node-group-template"
       }
-      
-      # Additional launch template configurations
-      launch_template_description = "EKS managed node group launch template"
-      update_launch_template_default_version = true
       
       block_device_mappings = {
         xvda = {
@@ -89,21 +108,27 @@ module "eks" {
         }
       }
 
-      # Add these variables for the userdata template
+      # User data configuration
       enable_bootstrap_user_data = true
-      user_data_template_path = "templates/userdata.tpl"
-      userdata_template_vars = {
-        cluster_name         = module.eks.cluster_name
-        cluster_endpoint     = module.eks.cluster_endpoint
-        cluster_auth_base64  = module.eks.cluster_certificate_authority_data
-        bootstrap_extra_args = "--container-runtime containerd --kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=normal'"
-      }
+      pre_bootstrap_user_data = <<-EOT
+        #!/bin/bash
+        set -e
+        # Set required environment variables
+        B64_CLUSTER_CA=${module.eks.cluster_certificate_authority_data}
+        API_SERVER_URL=${module.eks.cluster_endpoint}
+        
+        # Call EKS bootstrap script with proper parameters
+        /etc/eks/bootstrap.sh ${module.eks.cluster_name} \
+          --b64-cluster-ca $B64_CLUSTER_CA \
+          --apiserver-endpoint $API_SERVER_URL \
+          --container-runtime containerd
+      EOT
 
-      # Add instance profile configuration
+      # IAM instance profile configuration
       create_iam_instance_profile = true
       iam_instance_profile_arn    = aws_iam_instance_profile.eks_node_group.arn
       
-      # Add required tags
+      # Required tags
       tags = {
         "k8s.io/cluster-autoscaler/enabled" = "true"
         "k8s.io/cluster-autoscaler/${module.eks.cluster_name}" = "owned"
