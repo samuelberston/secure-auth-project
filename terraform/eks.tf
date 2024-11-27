@@ -11,10 +11,10 @@ provider "kubernetes" {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 19.0"
+  version = "~> 20.0" # Update
 
   cluster_name    = "secure-auth-cluster"
-  cluster_version = "1.28"
+  cluster_version = "1.28" # Update to 1.29
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
@@ -56,6 +56,8 @@ module "eks" {
   # Update to use the IAM roles we've created
   iam_role_arn = aws_iam_role.eks_cluster_role.arn
 
+  # Add cluster addons - coredns etc
+
   eks_managed_node_groups = {
     default = {
       min_size     = 1
@@ -89,5 +91,5 @@ module "eks" {
   }
 
   # Configure cluster access with IAM roles
-  manage_aws_auth_configmap = false
+  # manage_aws_auth_configmap = false
 }
