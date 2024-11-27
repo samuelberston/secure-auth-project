@@ -62,6 +62,26 @@ module "eks" {
       type                       = "egress"
       source_cluster_security_group = true
     }
+
+    # Cluster API to node groups
+    ingress_cluster_443 = {
+      description                = "Cluster API to node groups"
+      protocol                   = "tcp"
+      from_port                  = 443
+      to_port                    = 443
+      type                       = "ingress"
+      source_cluster_security_group = true
+    }
+
+    # Node to node ephemeral ports
+    ingress_nodes_ephemeral = {
+      description = "Node to node ephemeral ports"
+      protocol    = "tcp"
+      from_port   = 1025
+      to_port     = 65535
+      type        = "ingress"
+      self        = true
+    }
   }
 
   # Configure OIDC provider for service account integration
@@ -110,19 +130,8 @@ module "eks" {
 
       # User data configuration
       enable_bootstrap_user_data = true
-      pre_bootstrap_user_data = <<-EOT
-        #!/bin/bash
-        set -e
-        # Set required environment variables
-        B64_CLUSTER_CA=${module.eks.cluster_certificate_authority_data}
-        API_SERVER_URL=${module.eks.cluster_endpoint}
-        
-        # Call EKS bootstrap script with proper parameters
-        /etc/eks/bootstrap.sh ${module.eks.cluster_name} \
-          --b64-cluster-ca $B64_CLUSTER_CA \
-          --apiserver-endpoint $API_SERVER_URL \
-          --container-runtime containerd
-      EOT
+      bootstrap_extra_args      = "--container-runtime containerd"
+      user_data_template_path   = "templates/userdata.tpl"  # Add this
 
       # IAM instance profile configuration
       create_iam_instance_profile = true
