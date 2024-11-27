@@ -172,9 +172,9 @@ module "eks" {
   }
 
   # Configure cluster access with IAM roles
-  # manage_aws_auth_configmap = false
 }
 
+# IAM role for EBS CSI driver
 resource "aws_iam_role" "ebs_csi_driver_role" {
   name = "eks-ebs-csi-driver"
 
