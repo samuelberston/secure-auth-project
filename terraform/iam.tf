@@ -340,3 +340,54 @@ resource "aws_iam_instance_profile" "eks_node_group" {
   name = "eks-node-group-profile"
   role = aws_iam_role.eks_node_group_role.name
 }
+
+# Add EKS cluster access for nodes
+resource "aws_iam_role_policy" "node_cluster_access" {
+  name = "eks-node-cluster-access"
+  role = aws_iam_role.eks_node_group_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "eks:DescribeCluster",
+          "eks:GetClusterConfig"
+        ]
+        Resource = module.eks.cluster_arn
+      }
+    ]
+  })
+}
+
+# Add EC2 permissions for node bootstrap
+resource "aws_iam_role_policy" "node_additional_ec2" {
+  name = "eks-node-additional-ec2"
+  role = aws_iam_role.eks_node_group_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ec2:DescribeInstances",
+          "ec2:DescribeRouteTables",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeVolumes",
+          "ec2:DescribeVolumesModifications",
+          "ec2:DescribeVpcs"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# Add SSM permissions to node group role
+resource "aws_iam_role_policy_attachment" "eks_node_ssm" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  role       = aws_iam_role.eks_node_group_role.name
+}
