@@ -76,3 +76,23 @@ module "vpc_endpoints" {
     ManagedBy   = "terraform"
   }
 }
+
+resource "aws_security_group" "vpc_endpoints" {
+  name        = "vpc-endpoints-sg"
+  description = "Security group for VPC endpoints"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [module.vpc.vpc_cidr_block]
+    description = "Allow HTTPS traffic from within VPC"
+  }
+
+  tags = {
+    Name        = "vpc-endpoints-sg"
+    Environment = "production"
+    ManagedBy   = "terraform"
+  }
+}
