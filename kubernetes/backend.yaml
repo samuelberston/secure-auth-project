@@ -4,7 +4,7 @@ metadata:
   name: backend
   namespace: secure-auth
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: backend
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: sberston/backend:latest
+        image: sberston/backend:latest # Update for ECR image
         imagePullPolicy: Never # for local development
         ports:
         - containerPort: 3000
@@ -23,10 +23,10 @@ spec:
         - name: PORT
           value: "3000"
         - name: DB_HOST
-          value: "host.docker.internal"  # Note: You might need to adjust this for k8s
+          value: "host.docker.internal"  # Adjust this for RDS cluster
         - name: SESSION_SECRET
           valueFrom:
-            secretKeyRef:
+            secretKeyRef: # update to inject secrets from secret manager
               name: backend-secrets
               key: SESSION_SECRET  
         - name: JWT_SECRET
