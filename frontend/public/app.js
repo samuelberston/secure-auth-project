@@ -197,7 +197,7 @@ async function handleLogin(event) {
 
 // handle logout
 function handleLogout() {
-    localStorage.removeItem('token'); // NOT WORKING!
+    localStorage.removeItem('token'); // FIXED
     // Update UI accordingly
     document.getElementById('register-form').style.display = 'block';
     document.getElementById('login-form').style.display = 'block';

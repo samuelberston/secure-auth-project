@@ -37,7 +37,7 @@ const proxy = createProxyMiddleware({
     pathRewrite: {
         '^/api': '/' // removes /api prefix when forwarding to backend
     },
-    methods: ['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS'], // not working for POST requests -- figure out why
+    methods: ['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS'], // not working for POST requests
     logLevel: 'debug'
 });
 
@@ -59,7 +59,6 @@ app.post('/backend/login', async (req, res) => {
         const response = await axios.post(`${BACKEND_URL}/login`, req.body, {
             headers: {
                 'Content-Type': 'application/json',
-                // Forward any necessary headers from the original request
                 ...req.headers
             }    
         });
