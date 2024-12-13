@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 dotenv.config();
 
-// Import your routers
+// Import  routers
 const UsersRouter = require('../routes/usersRouter.js');
 
 // Create an Express app instance  
@@ -23,7 +23,7 @@ app.use(session({
     cookie: { secure: false, sameSite: "Lax" } 
 }));
 
-// Use your routers
+// Use  routers
 app.use('/users', UsersRouter);
 
 let testUsername = `testuser${Math.floor(Math.random() * 1000)}`;
