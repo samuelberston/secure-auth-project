@@ -23,7 +23,7 @@ spec:
         - name: PORT
           value: "3000"
         - name: DB_HOST
-          value: "host.docker.internal"  # Adjust this for RDS cluster
+          value: "host.docker.internal"  # update this for RDS cluster
         - name: SESSION_SECRET
           valueFrom:
             secretKeyRef: # update to inject secrets from secret manager

@@ -77,7 +77,6 @@ app.post('/backend/login', async (req, res) => {
     }
 });
 
-// Add similar routes for other POST endpoints you need
 app.post('/backend/users', async (req, res) => {
     try {
         const response = await axios.post(`${BACKEND_URL}/users`, req.body, {
