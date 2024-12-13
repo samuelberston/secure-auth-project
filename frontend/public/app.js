@@ -15,7 +15,7 @@ async function getAdviceOfTheDay() {
         }
     } catch (err) {
         // Handle corrupted cache data
-        console.warn('Cache data is corrupted. Clearing advice cache.');
+        console.warn('Cache data is corrupted. Clearing advice cache. ', err);
         localStorage.removeItem('advice');
     }
 

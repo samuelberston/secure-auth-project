@@ -121,7 +121,7 @@ module "eks" {
     }
     aws-ebs-csi-driver = {
       most_recent = true
-      service_account_role_arn = aws_iam_role.ebs_csi_driver_role.arn # You'll need to create this IAM role
+      service_account_role_arn = aws_iam_role.ebs_csi_driver_role.arn # create this IAM role
     }
   }
 
