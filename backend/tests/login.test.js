@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 dotenv.config();
 
-// Import your routers
+// Import routers
 const LoginRouter = require('../routes/loginRouter.js');
 const UsersRouter = require('../routes/usersRouter.js');
 const ProtectedRouter = require('../routes/protectedRouter.js');
@@ -34,8 +34,7 @@ app.use(session({
     store: store
 }));
 
-
-// Use your routers
+// Use routers
 app.use('/login', LoginRouter);
 app.use('/users', UsersRouter);
 app.use('/protected', ProtectedRouter);
