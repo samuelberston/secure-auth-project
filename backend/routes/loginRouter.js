@@ -104,6 +104,13 @@ LoginRouter.post(
                     { expiresIn: '1h' } // Token expires in 1 hour
                 );
 
+                // Store user info in session
+                req.session.user = {
+                    username: username,
+                    userUUID: userUUID,
+                    loggedInAt: new Date().toISOString()
+                };
+
                 console.log("Authentication successful");
                 logger.info(`User %s successfully logged in from IP: %s`, username, req.ip);
                 return res.status(200).json({ 
