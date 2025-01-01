@@ -12,3 +12,4 @@ The project includes mitigations which address common OWASP security vulnerabili
 - use of secure HTTP headers such as x-xsrf-token, content-security-policy, etc.
 - use of high-entropy IDs and prevent insecure direct object reference
 
+The project also sets up infrastructure using terraform to deploy the application to AWS.
